@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="DROOLS/Drools"/>
+	<classpathentry kind="lib" path="C:/Users/Sam/.m2/repository/org/drools/drools-core/5.5.0.Final/drools-core-5.5.0.Final.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="org.drools"/>
+			<attribute name="maven.artifactId" value="drools-core"/>
+			<attribute name="maven.version" value="5.5.0.Final"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Sam/.m2/repository/org/drools/knowledge-api/5.5.0.Final/knowledge-api-5.5.0.Final.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="org.drools"/>
+			<attribute name="maven.artifactId" value="knowledge-api"/>
+			<attribute name="maven.version" value="5.5.0.Final"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/Users/Sam/Drools/Runtime/kie-api.jar" sourcepath="D:/Users/Sam/Drools/Runtime/kie-api.jar"/>
+	<classpathentry kind="output" path="target"/>
+</classpath>

@@ -1,0 +1,25 @@
+//created on: 19-Apr-2015
+package com.SOOHP
+
+
+
+//list any import classes here.
+
+import com.SOOHP.Clue
+
+//declare any global variables here
+
+
+rule "name is 1"
+when
+	$c : Clue ( this.getClueName == 1 ) 
+then
+	System.out.println("Fact is 1");
+end
+
+rule "name is 2"
+when
+	$c : Clue ( this.getClueName == 2 ) 
+then
+	System.out.println("Fact is 2");
+end
