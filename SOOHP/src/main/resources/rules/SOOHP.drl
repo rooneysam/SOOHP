@@ -5,21 +5,36 @@ package com.SOOHP
 
 //list any import classes here.
 
-import com.SOOHP.Clue
+///import com.SOOHP.Clue
+///import com.SOOHP.ClueList
+///import java.util.Vector
+import java.util.Vector
 
 //declare any global variables here
 
 
-rule "name is 1"
+rule "ClueList is 3"
 when
-	$c : Clue ( this.getClueName == 1 ) 
+$C : Vector()
+///$E : ClueList()
+$D : Vector(this contains "first")
 then
-	System.out.println("Fact is 1");
+	System.out.println("Clue List Contains Clue3");
+	$C.add("test5");
 end
 
-rule "name is 2"
+rule "ClueList is 2,1"
 when
-	$c : Clue ( this.getClueName == 2 ) 
+$C : Vector()
+$D : Vector((this contains "first")&&(this contains "second"))
 then
-	System.out.println("Fact is 2");
+	System.out.println("Clue List Contains Clue2 and Clue1");
+end
+
+rule "ClueList is 1"
+when
+$C : Vector()
+$D : Vector((this contains "Clue1")&&(this contains "Clue6"))
+then
+	System.out.println("Clue List Contains Clue1 and Clue6");
 end

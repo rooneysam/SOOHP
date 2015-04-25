@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="DROOLS/Drools"/>
+	<classpathentry exported="true" kind="con" path="DROOLS/Drools"/>
 	<classpathentry kind="lib" path="C:/Users/Sam/.m2/repository/org/drools/drools-core/5.5.0.Final/drools-core-5.5.0.Final.jar">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
