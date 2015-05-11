@@ -167,14 +167,14 @@ import org.kie.api.runtime.KieSession;
 	     
 	            	output.setText( " button pressed is: " + SelectedAnswer );
 	            	JButton button = (JButton) e.getComponent();
-	            	clueList.add(SelectedAnswer);
+	            	///clueList.add(SelectedAnswer);
 	            	///check if a test is requested if so display
+
+	                callback.testClues( (JFrame) button.getTopLevelAncestor(),clueList,SelectedAnswer );
 	            	if (clueList.toString().contains("test5")){
-	            		questionTextArea.setText( "try test5");
+	            		questionTextArea.setText("try test5");
 	            		
 	            	}
-	                callback.testClues( (JFrame) button.getTopLevelAncestor(),clueList,SelectedAnswer );
-	                
 	            }
 	        }
 	        
