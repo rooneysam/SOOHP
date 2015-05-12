@@ -260,6 +260,7 @@ import org.kie.api.runtime.KieSession;
 	        {
 	          Scanner questionScanner = new Scanner(new File("C:\\allQuestions.csv")).useDelimiter("\n");
 	          while (questionScanner.hasNext()) {
+	        	  ///this bit passes each line to a separate scanner which turns it into a question
 	        	  allQuestions.add(scanLine(questionScanner.next()));
 	          }
 	          questionScanner.close();
@@ -268,8 +269,10 @@ import org.kie.api.runtime.KieSession;
 	        {
 	          System.out.println(ioe.getMessage());
 	        }
-	        
-	        System.out.println("Question 1 Name: "+ (allQuestions.get(0).getQuestionName())+"Question 1 Text: "+ (allQuestions.get(0).getQuestionText()));
+	        for (int q =0;q<allQuestions.size();q++)
+	        {
+	        System.out.println("Question Name: "+ (allQuestions.get(q).getQuestionName())+"Question Text: "+ (allQuestions.get(q).getQuestionText()));
+	        }
 	    }
 	    
 	    

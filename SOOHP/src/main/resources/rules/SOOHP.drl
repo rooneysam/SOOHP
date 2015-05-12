@@ -17,7 +17,7 @@ rule "ClueList is 3"
 when
 $C : Vector()
 ///$E : ClueList()
-$D : Vector(this contains "first")
+$D : Vector((this contains "first")&&(this not contains "test5"))
 then
 	System.out.println("Clue List Contains Clue3");
 	$C.add("test5");
