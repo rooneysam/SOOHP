@@ -8,7 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
 import java.util.Vector;
+
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -21,12 +25,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
+
+
+
 	public class SOOHPMain {
 
+	Vector<Question> allQuestions = new Vector<Question>();
+		
 	    public static void main(String[] args) {
 	        new SOOHPMain().init(true);
 	    }
@@ -44,20 +54,43 @@ import org.kie.api.runtime.KieSession;
 	        //create test questions, these will have to be done another way in finished
 	        //program, read in from a csv or something, also each question will have to have a 
 	        //text asking the user a question and a set of choices/clues/answers 
-	        Vector<Question> allQuestions = new Vector<Question>();
-	        allQuestions.add(new Question("Q1"));
-	        allQuestions.add(new Question("Q2"));
-	        allQuestions.add(new Question("Q3"));
-	        allQuestions.add(new Question("Q4"));
-	        allQuestions.add(new Question("Q5"));
+//	        ///Vector<Question> allQuestions = new Vector<Question>();
+//	        allQuestions.add(new Question("Q1"));
+//	        allQuestions.add(new Question("Q2"));
+//	        allQuestions.add(new Question("Q3"));
+//	        allQuestions.add(new Question("Q4"));
+//	        allQuestions.add(new Question("Q5"));
 	        
-
+//	        ///test read in questions from file 
+//	        try
+//	        {
+//	          Scanner s = new Scanner(new File("C:\\allQuestions.csv")).useDelimiter("\n");
+//	          while (s.hasNext()) {
+//	        	
+//	        		  allQuestions.add(new Question(s.next()));
+//	        	  
+//	          }
+//	          s.close();
+//	        }
+//	        catch (IOException ioe)
+//	        {
+//	          System.out.println(ioe.getMessage());
+//	        }
+//	        
+//	        ///test print out all question names
+//	        for (int aB = 1; aB < allQuestions.size();aB++) {
+//	        	System.out.println("Question "+aB+" "+ (allQuestions.get(aB-1).getQuestionName()));
+//	        }
+//	        
+	        scanQuestions();
 	        
 	        //The callback is responsible for populating working memory and
 	        // firing all rules
 	        SOOHPUI ui = new SOOHPUI( allQuestions,new SOOHPCallback( kc ) );
 	        ui.createAndShowGUI(exitOnClose);
 	    }
+	    
+	    
 
 
 	    public static class SOOHPUI extends JPanel {
@@ -219,21 +252,81 @@ import org.kie.api.runtime.KieSession;
 	    }
 
 
+	    
+	    public void scanQuestions()
+	    {
+	        ///test read in questions from file 
+	        try
+	        {
+	          Scanner questionScanner = new Scanner(new File("C:\\allQuestions.csv")).useDelimiter("\n");
+	          while (questionScanner.hasNext()) {
+	        	  allQuestions.add(scanLine(questionScanner.next()));
+	          }
+	          questionScanner.close();
+	        }
+	        catch (IOException ioe)
+	        {
+	          System.out.println(ioe.getMessage());
+	        }
+	        
+	        System.out.println("Question 1 Name: "+ (allQuestions.get(0).getQuestionName())+"Question 1 Text: "+ (allQuestions.get(0).getQuestionText()));
+	    }
+	    
+	    
+	    public Question scanLine(String line)
+	    {
+	    	Scanner lineScanner = new Scanner(line);
+	        lineScanner.useDelimiter(",");
+	        String qName = lineScanner.next();
+	        String qText = lineScanner.next();
+	        String a1 = lineScanner.next();
+	        String a2 = lineScanner.next();
+	        String a3 = lineScanner.next();
+	        return new Question(qName,qText,a1,a2,a3);
+	    }
+	    
+	    
+	    
+	    
 
 	    public class Question {
 
 	    	private String QuestionName;
+	    	private String QuestionText;
+	    	private String AnswerOne;
+	    	private String AnswerTwo;
+	    	private String AnswerThree;
 	    	private int successful;
 	    	private boolean asked;
 
-	    public Question (String newQuestionName){
+	    public Question (String newQuestionName, String newQuestionText,String newAnswerOne,String newAnswerTwo,String newAnswerThree){
 	    	this.QuestionName = newQuestionName;
+	    	this.QuestionText = newQuestionText;
+	    	this.AnswerOne = newAnswerOne;
+	    	this.AnswerTwo = newAnswerTwo;
+	    	this.AnswerThree = newAnswerThree;
 	    	successful = 0;
 	    	asked = false;
 	    }
 
 	    public String getQuestionName() {
 	    	return QuestionName;
+	    }
+	    
+	    public String getQuestionText() {
+	    	return QuestionText;
+	    }
+	    
+	    public String getAnswerOne() {
+	    	return AnswerOne;
+	    }
+	    
+	    public String getAnswerTwo() {
+	    	return AnswerTwo;
+	    }
+	    
+	    public String getAnswerThree() {
+	    	return AnswerThree;
 	    }
 
 	    public void incrementSuccessful(){
