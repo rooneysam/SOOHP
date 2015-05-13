@@ -175,15 +175,11 @@ import java.util.Random;
 	            	///check if a test is requested if so display
 	                callback.testClues( (JFrame) button.getTopLevelAncestor(),clueList,SelectedAnswer );
 	            	if (clueList.toString().contains("test5")){
-	            		questionTextArea.setText("try test5");
-	            		
+	            		questionTextArea.setText("try test5");	            		
+	            	}                       	
+	            	else {
+		            	questionTextArea.setText(getRandomQuestion().getQuestionText());
 	            	}
-	            	
-	            	
-//	            	//set new question text
-//	            	Question thisQuestion = new Question();
-//	            	thisQuestion = getRandomQuestion();
-	            	questionTextArea.setText(getRandomQuestion().getQuestionText());
 	            }
 	        }
 	        
