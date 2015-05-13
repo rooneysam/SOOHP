@@ -30,15 +30,16 @@ import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
-
+import java.util.Random;
 
 
 	public class SOOHPMain {
 
-	Vector<Question> allQuestions = new Vector<Question>();
+	static Vector<Question> allQuestions = new Vector<Question>();
+
 		
 	    public static void main(String[] args) {
-	        new SOOHPMain().init(true);
+	    	new SOOHPMain().init(true);
 	    }
 
 	    public SOOHPMain() {
@@ -51,38 +52,8 @@ import org.kie.api.runtime.KieSession;
 	        // From the kie services, a container is created from the classpath
 	        KieContainer kc = ks.getKieClasspathContainer();
 	        
-	        //create test questions, these will have to be done another way in finished
-	        //program, read in from a csv or something, also each question will have to have a 
-	        //text asking the user a question and a set of choices/clues/answers 
-//	        ///Vector<Question> allQuestions = new Vector<Question>();
-//	        allQuestions.add(new Question("Q1"));
-//	        allQuestions.add(new Question("Q2"));
-//	        allQuestions.add(new Question("Q3"));
-//	        allQuestions.add(new Question("Q4"));
-//	        allQuestions.add(new Question("Q5"));
-	        
-//	        ///test read in questions from file 
-//	        try
-//	        {
-//	          Scanner s = new Scanner(new File("C:\\allQuestions.csv")).useDelimiter("\n");
-//	          while (s.hasNext()) {
-//	        	
-//	        		  allQuestions.add(new Question(s.next()));
-//	        	  
-//	          }
-//	          s.close();
-//	        }
-//	        catch (IOException ioe)
-//	        {
-//	          System.out.println(ioe.getMessage());
-//	        }
-//	        
-//	        ///test print out all question names
-//	        for (int aB = 1; aB < allQuestions.size();aB++) {
-//	        	System.out.println("Question "+aB+" "+ (allQuestions.get(aB-1).getQuestionName()));
-//	        }
-//	        
 	        scanQuestions();
+///	        getRandomQuestion();
 	        
 	        //The callback is responsible for populating working memory and
 	        // firing all rules
@@ -90,9 +61,6 @@ import org.kie.api.runtime.KieSession;
 	        ui.createAndShowGUI(exitOnClose);
 	    }
 	    
-	    
-
-
 	    public static class SOOHPUI extends JPanel {
 
 	        private JTextArea questionTextArea;
@@ -135,7 +103,8 @@ import org.kie.api.runtime.KieSession;
 	            questionTextArea.setEditable( false );
 	            JScrollPane questionTextPane = new JScrollPane( questionTextArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 	            topHalf.add( questionTextPane, BorderLayout.CENTER );	           
-	            questionTextArea.setText(allQuestions.elementAt(1).getQuestionName());
+///	            questionTextArea.setText(allQuestions.elementAt(1).getQuestionName());
+	            questionTextArea.setText("Press OK to start");
 	            	
 	            ///answer buttons
 	            JPanel answerPane = new JPanel();
@@ -175,6 +144,7 @@ import org.kie.api.runtime.KieSession;
 	            
 
 	        }
+	        
 
 	        /**
 	         * Create and show the GUI
@@ -200,14 +170,20 @@ import org.kie.api.runtime.KieSession;
 	     
 	            	output.setText( " button pressed is: " + SelectedAnswer );
 	            	JButton button = (JButton) e.getComponent();
-	            	///clueList.add(SelectedAnswer);
-	            	///check if a test is requested if so display
 
+
+	            	///check if a test is requested if so display
 	                callback.testClues( (JFrame) button.getTopLevelAncestor(),clueList,SelectedAnswer );
 	            	if (clueList.toString().contains("test5")){
 	            		questionTextArea.setText("try test5");
 	            		
 	            	}
+	            	
+	            	
+//	            	//set new question text
+//	            	Question thisQuestion = new Question();
+//	            	thisQuestion = getRandomQuestion();
+	            	questionTextArea.setText(getRandomQuestion().getQuestionText());
 	            }
 	        }
 	        
@@ -219,6 +195,12 @@ import org.kie.api.runtime.KieSession;
 	    		}
 	    	}
 	    	
+		    public Question getRandomQuestion()
+		    {
+		    	Random rnd = new Random();
+		    	Question randomQuestion = (allQuestions.get(rnd.nextInt(allQuestions.size())));
+		    	return randomQuestion;
+		    }
 
 	    }
 
@@ -271,7 +253,7 @@ import org.kie.api.runtime.KieSession;
 	        }
 	        for (int q =0;q<allQuestions.size();q++)
 	        {
-	        System.out.println("Question Name: "+ (allQuestions.get(q).getQuestionName())+"Question Text: "+ (allQuestions.get(q).getQuestionText()));
+	        System.out.println("Question Name: "+ (allQuestions.get(q).getQuestionName())+", Question Text: "+ (allQuestions.get(q).getQuestionText()));
 	        }
 	    }
 	    
@@ -289,7 +271,7 @@ import org.kie.api.runtime.KieSession;
 	    }
 	    
 	    
-	    
+
 	    
 
 	    public class Question {
@@ -301,6 +283,11 @@ import org.kie.api.runtime.KieSession;
 	    	private String AnswerThree;
 	    	private int successful;
 	    	private boolean asked;
+	    	
+	    public Question()
+	    {
+	    	
+	    }
 
 	    public Question (String newQuestionName, String newQuestionText,String newAnswerOne,String newAnswerTwo,String newAnswerThree){
 	    	this.QuestionName = newQuestionName;
