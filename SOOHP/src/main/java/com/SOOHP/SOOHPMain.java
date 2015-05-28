@@ -36,7 +36,7 @@ import java.util.Random;
 	public class SOOHPMain {
 
 	static Vector<Question> allQuestions = new Vector<Question>();
-
+	static Vector<Question> askedQuestions = new Vector<Question>();
 		
 	    public static void main(String[] args) {
 	    	new SOOHPMain().init(true);
@@ -68,6 +68,8 @@ import java.util.Random;
 	        private JTextArea output;
 
 	        private String SelectedAnswer ;
+	        
+	        private Question SelectedQuestion;
 
 	        private SOOHPCallback callback;
 
@@ -79,6 +81,9 @@ import java.util.Random;
 	            this.callback = callback;
 	            RadioListener myListener = null;
 	            Vector<Question> allQuestions = allQs;
+	            
+	            SelectedQuestion = getBlankQuestion();
+	            
 	            ///Vector<String> currentClueList = clueList;
 	            
 	            //Create main vertical split panel
@@ -108,20 +113,20 @@ import java.util.Random;
 	            	
 	            ///answer buttons
 	            JPanel answerPane = new JPanel();
-	            JRadioButton firstButton = new JRadioButton("first");
-	            firstButton.setActionCommand("first");
+	            JRadioButton yesButton = new JRadioButton("Yes");
+	            yesButton.setActionCommand(".Yes");
 	            myListener = new RadioListener();
-	            firstButton.addActionListener(myListener);
-	            JRadioButton secondButton = new JRadioButton("second");
-	            secondButton.setActionCommand("second");
-	            secondButton.addActionListener(myListener);
+	            yesButton.addActionListener(myListener);
+	            JRadioButton noButton = new JRadioButton("No");
+	            noButton.setActionCommand(".No");
+	            noButton.addActionListener(myListener);
 	            ButtonGroup group = new ButtonGroup();
 
 
-	            group.add(firstButton);
-	            group.add(secondButton);
-	            answerPane.add(firstButton);
-	            answerPane.add(secondButton);
+	            group.add(yesButton);
+	            group.add(noButton);
+	            answerPane.add(yesButton);
+	            answerPane.add(noButton);
 	            bottomHalf.add(answerPane,BorderLayout.NORTH);
 	            
 	            ///ok button
@@ -153,7 +158,7 @@ import java.util.Random;
 	            //Create and set up the window.
 	            JFrame frame = new JFrame( "SOOHP" );
 	            frame.setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
-
+	            
 	            setOpaque( true );
 	            frame.setContentPane( this );
 
@@ -167,18 +172,27 @@ import java.util.Random;
 
 	        private class okButtonHandler extends MouseAdapter {
 	            public void mouseReleased(MouseEvent e) {
-	     
+	            	
 	            	output.setText( " button pressed is: " + SelectedAnswer );
 	            	JButton button = (JButton) e.getComponent();
-
+	            	
 
 	            	///check if a test is requested if so display
-	                callback.testClues( (JFrame) button.getTopLevelAncestor(),clueList,SelectedAnswer );
+	            	
+	                callback.testClues( (JFrame) button.getTopLevelAncestor(),clueList,SelectedQuestion.getQuestionName()+SelectedAnswer );
 	            	if (clueList.toString().contains("test5")){
 	            		questionTextArea.setText("try test5");	            		
 	            	}                       	
 	            	else {
-		            	questionTextArea.setText(getRandomQuestion().getQuestionText());
+	    		    	if (!(askedQuestions.containsAll(allQuestions)))
+	    		    	{
+			            	SelectedQuestion = getRandomQuestion();
+			            	questionTextArea.setText(SelectedQuestion.getQuestionText());	    		    		
+	    		    	}
+	    		    	else{
+	    		    		System.out.println("No more questions");
+	    		    	}
+
 	            	}
 	            }
 	        }
@@ -194,11 +208,29 @@ import java.util.Random;
 		    public Question getRandomQuestion()
 		    {
 		    	Random rnd = new Random();
-		    	Question randomQuestion = (allQuestions.get(rnd.nextInt(allQuestions.size())));
-		    	return randomQuestion;
+		    	Question nextQuestion = (allQuestions.get(rnd.nextInt(allQuestions.size())));	
+
+
+		    	while (askedQuestions.contains(nextQuestion))
+		    	{
+		    		System.out.println("we already asked the question : " + (nextQuestion.getQuestionName()));
+		    		nextQuestion = (allQuestions.get(rnd.nextInt(allQuestions.size())));
+		    	}
+		    	Question randomQuestion = (nextQuestion);
+		    	System.out.println("we have not yet asked the question : " + (nextQuestion.getQuestionName()));
+		    	askedQuestions.add(nextQuestion);
+		    	return randomQuestion;	
+		    }
+		    
+		    public static Question getBlankQuestion()
+		    {	    	
+		    	Question blankQuestion = (allQuestions.get(0));
+		    	return blankQuestion;
 		    }
 
+
 	    }
+
 
 
 	    public static class SOOHPCallback {
@@ -218,7 +250,7 @@ import java.util.Random;
 
 	        	currentClueList.add(selectedAnswer);
             	System.out.println("currentClueList is: " + currentClueList.toString());
-	          
+            	System.out.println("askedQuestions is is: " + askedQuestions.toString());
 	            // session listed in META-INF/kmodule.xml file 
 	            KieSession ksession = kcontainer.newKieSession("SOOHPKS");
 
@@ -236,8 +268,9 @@ import java.util.Random;
 	        ///test read in questions from file 
 	        try
 	        {
-	          Scanner questionScanner = new Scanner(new File("C:\\allQuestions.csv")).useDelimiter("\n");
+	          Scanner questionScanner = new Scanner(new File("C:\\allQuestions.V2.csv")).useDelimiter("\n");
 	          while (questionScanner.hasNext()) {
+	        	  //System.out.println(questionScanner.next());
 	        	  ///this bit passes each line to a separate scanner which turns it into a question
 	        	  allQuestions.add(scanLine(questionScanner.next()));
 	          }
@@ -259,11 +292,10 @@ import java.util.Random;
 	    	Scanner lineScanner = new Scanner(line);
 	        lineScanner.useDelimiter(",");
 	        String qName = lineScanner.next();
+	        //System.out.println("Qn:"+qName);
 	        String qText = lineScanner.next();
-	        String a1 = lineScanner.next();
-	        String a2 = lineScanner.next();
-	        String a3 = lineScanner.next();
-	        return new Question(qName,qText,a1,a2,a3);
+	        //System.out.println("Qt:"+qText);
+	        return new Question(qName,qText);
 	    }
 	    
 	    
@@ -274,9 +306,6 @@ import java.util.Random;
 
 	    	private String QuestionName;
 	    	private String QuestionText;
-	    	private String AnswerOne;
-	    	private String AnswerTwo;
-	    	private String AnswerThree;
 	    	private int successful;
 	    	private boolean asked;
 	    	
@@ -285,12 +314,9 @@ import java.util.Random;
 	    	
 	    }
 
-	    public Question (String newQuestionName, String newQuestionText,String newAnswerOne,String newAnswerTwo,String newAnswerThree){
+	    public Question (String newQuestionName, String newQuestionText){
 	    	this.QuestionName = newQuestionName;
 	    	this.QuestionText = newQuestionText;
-	    	this.AnswerOne = newAnswerOne;
-	    	this.AnswerTwo = newAnswerTwo;
-	    	this.AnswerThree = newAnswerThree;
 	    	successful = 0;
 	    	asked = false;
 	    }
@@ -303,18 +329,6 @@ import java.util.Random;
 	    	return QuestionText;
 	    }
 	    
-	    public String getAnswerOne() {
-	    	return AnswerOne;
-	    }
-	    
-	    public String getAnswerTwo() {
-	    	return AnswerTwo;
-	    }
-	    
-	    public String getAnswerThree() {
-	    	return AnswerThree;
-	    }
-
 	    public void incrementSuccessful(){
 	    	successful ++;
 	    }
