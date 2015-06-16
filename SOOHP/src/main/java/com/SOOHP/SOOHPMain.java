@@ -25,6 +25,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
@@ -37,6 +40,7 @@ import java.util.Random;
 
 	static Vector<Question> allQuestions = new Vector<Question>();
 	static Vector<Question> askedQuestions = new Vector<Question>();
+	
 		
 	    public static void main(String[] args) {
 	    	new SOOHPMain().init(true);
@@ -53,7 +57,6 @@ import java.util.Random;
 	        KieContainer kc = ks.getKieClasspathContainer();
 	        
 	        scanQuestions();
-///	        getRandomQuestion();
 	        
 	        //The callback is responsible for populating working memory and
 	        // firing all rules
@@ -64,7 +67,7 @@ import java.util.Random;
 	    public static class SOOHPUI extends JPanel {
 
 	        private JTextArea questionTextArea;
-	        
+	        JFrame frame = new JFrame( "SOOHP" );
 	        private JTextArea output;
 
 	        private String SelectedAnswer ;
@@ -80,12 +83,10 @@ import java.util.Random;
 	            super( new BorderLayout() );
 	            this.callback = callback;
 	            RadioListener myListener = null;
-	            Vector<Question> allQuestions = allQs;
 	            
+	            //this bit shouldn't be necessary
 	            SelectedQuestion = getBlankQuestion();
-	            
-	            ///Vector<String> currentClueList = clueList;
-	            
+
 	            //Create main vertical split panel
 	            JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
 	            add( splitPane,BorderLayout.CENTER );
@@ -108,7 +109,6 @@ import java.util.Random;
 	            questionTextArea.setEditable( false );
 	            JScrollPane questionTextPane = new JScrollPane( questionTextArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 	            topHalf.add( questionTextPane, BorderLayout.CENTER );	           
-///	            questionTextArea.setText(allQuestions.elementAt(1).getQuestionName());
 	            questionTextArea.setText("Press OK to start");
 	            	
 	            ///answer buttons
@@ -156,7 +156,9 @@ import java.util.Random;
 	         */
 	        public void createAndShowGUI(boolean exitOnClose) {
 	            //Create and set up the window.
-	            JFrame frame = new JFrame( "SOOHP" );
+///	            JFrame frame = new JFrame( "SOOHP" );
+	        	        	
+	        	
 	            frame.setDefaultCloseOperation(exitOnClose ? JFrame.EXIT_ON_CLOSE : JFrame.DISPOSE_ON_CLOSE);
 	            
 	            setOpaque( true );
@@ -166,6 +168,30 @@ import java.util.Random;
 	            frame.pack();
 	            frame.setLocationRelativeTo(null); // Center in screen
 	            frame.setVisible( true );
+	            
+
+	            try
+	            {
+	              try {
+					UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	              JFrame.setDefaultLookAndFeelDecorated(true);
+	              SwingUtilities.updateComponentTreeUI(this.frame);
+	            }
+	            catch (UnsupportedLookAndFeelException e)
+	            {
+	              System.out.println(e);
+	            }
+	        	
 	        }
 
 
