@@ -3,7 +3,9 @@ package com.SOOHP;
 //this comment is just here to test if GIT push/pull is working
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.Vector;
+
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -24,30 +27,39 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+
+
+
 ///import javax.swing.SwingUtilities;
 ///import javax.swing.UIManager;
 ///import javax.swing.UnsupportedLookAndFeelException;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+
 import java.util.Random;
 
 public class SOOHPMain {
 	static Vector<Question> allQuestions = new Vector<Question>();
 	static Vector<Question> askedQuestions = new Vector<Question>();
 	public static String SelectedAnswer;
-
-	// /test
 	public static JFrame frame = new JFrame("SOOHP");
 	public static JTextArea questionTextArea;
-	public static JTextArea output;
+	///public static JTextArea output;
 	public static Question SelectedQuestion;
 	public static SOOHPCallback callback;
 	public static Vector<String> clueList = new Vector<String>();
+	///button handlers
 	public static SOOHPMain.okButtonHandler myOKButtonHandler = new okButtonHandler();
-
-	// /test
-
+	public static SOOHPMain.exitButtonHandler myExitButtonHandler = new exitButtonHandler();
+	public static SOOHPMain.yesButtonHandler myYesButtonHandler = new yesButtonHandler();
+	public static SOOHPMain.noButtonHandler myNoButtonHandler = new noButtonHandler();
+	public static SOOHPMain.skipButtonHandler mySkipButtonHandler = new skipButtonHandler();
+	///panels
+	public static JPanel answerPane = new JPanel(new GridLayout(3, 1));
+	///buttons
+	public static JRadioButton yesButton = new JRadioButton("Yes");
+	
 	public static void main(String[] args) {
 		new SOOHPMain().init(true);
 	}
@@ -111,10 +123,13 @@ public class SOOHPMain {
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			topHalf.add(questionTextPane, BorderLayout.CENTER);
 			questionTextArea.setText("Press OK to start");
-
+			
+			
 			// /answer buttons
-			JPanel answerPane = new JPanel();
-			JRadioButton yesButton = new JRadioButton("Yes");
+			///JPanel answerPane = new JPanel(new GridLayout(3, 1));
+			answerPane.setOpaque(true);
+			answerPane.setBackground(Color.BLUE);
+			
 			yesButton.setActionCommand(".Yes");
 			myListener = new RadioListener();
 			yesButton.addActionListener(myListener);
@@ -124,27 +139,42 @@ public class SOOHPMain {
 			ButtonGroup group = new ButtonGroup();
 			group.add(yesButton);
 			group.add(noButton);
-			answerPane.add(yesButton);
-			answerPane.add(noButton);
+
+			answerPane.add(noButton, BorderLayout.SOUTH);
 			bottomHalf.add(answerPane, BorderLayout.NORTH);
-			// /ok button
-			JPanel okPanel = new JPanel();
+			///ok button
+			JPanel buttonPanel = new JPanel();
+			
 			JButton okButton = new JButton("OK");
 			okButton.setVerticalTextPosition(AbstractButton.CENTER);
 			okButton.setHorizontalTextPosition(AbstractButton.TRAILING);
 			// attach handler to assert items into working memory
 			okButton.addMouseListener(myOKButtonHandler);
 			okButton.setActionCommand("OK");
-			okPanel.add(okButton);
-			bottomHalf.add(okPanel);
-			output = new JTextArea(1, 5);
-			output.setEditable(false);
-			JScrollPane outputPane = new JScrollPane(output,
-					ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			bottomHalf.add(outputPane, BorderLayout.SOUTH);
-			callback.setOutput(output);
+			
+			JButton exitButton = new JButton("EXIT");
+			exitButton.addMouseListener(myExitButtonHandler);
+			exitButton.setActionCommand("EXIT");
+			buttonPanel.add(exitButton, BorderLayout.WEST);
 
+			
+			buttonPanel.add(okButton, BorderLayout.EAST);
+
+			
+			
+			buttonPanel.setOpaque(true);
+			buttonPanel.setBackground(Color.GREEN);
+			bottomHalf.add(buttonPanel, BorderLayout.SOUTH);
+//			output = new JTextArea(1, 5);
+//			output.setEditable(false);
+//			callback.setOutput(output);
+			
+			//to be put in show question pane
+			
+			
+			//call showTypeScreen here
+			showQuestionScreen();
+			
 		}
 
 		/**
@@ -164,19 +194,22 @@ public class SOOHPMain {
 
 		// /these 2 methods need to be filled in
 		public void showTypeScreen() {
-
+			System.out.println("Type Screen Called");
 		}
 
 		public static void showQuestionScreen() {
 
+			answerPane.add(yesButton, BorderLayout.NORTH);
 		}
 
 	}
 
-	// /Other classes
+	/**
+	 * Other Classes
+	 */
 	public static class okButtonHandler extends MouseAdapter {
 		public void mouseReleased(MouseEvent e) {
-			output.setText(" button pressed is: " + SelectedAnswer);
+			///output.setText(" button pressed is: " + SelectedAnswer);
 			JButton button = (JButton) e.getComponent();
 			// /check if a test is requested if so display
 			callback.testClues((JFrame) button.getTopLevelAncestor(), clueList,
@@ -193,6 +226,31 @@ public class SOOHPMain {
 				}
 
 			}
+		}
+	}
+	
+	public static class exitButtonHandler extends MouseAdapter {
+		public void mouseReleased(MouseEvent e) {
+			///code goes here
+			System.exit(0);
+		}
+	}
+	
+	public static class yesButtonHandler extends MouseAdapter {
+		public void mouseReleased(MouseEvent e) {
+			///code goes here
+		}
+	}
+	
+	public static class noButtonHandler extends MouseAdapter {
+		public void mouseReleased(MouseEvent e) {
+			///code goes here
+		}
+	}
+	
+	public static class skipButtonHandler extends MouseAdapter {
+		public void mouseReleased(MouseEvent e) {
+			///code goes here
 		}
 	}
 
@@ -229,7 +287,9 @@ public class SOOHPMain {
 		}
 	}
 
-	// /Methods
+	/**
+	 * Methods  
+	 */
 	// /these methods call the different client screens
 
 	public void scanQuestions() {
