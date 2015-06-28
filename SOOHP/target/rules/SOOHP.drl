@@ -13,30 +13,30 @@ import java.util.Vector
 //declare any global variables here
 
 
-rule "ClueList is 1 & 2"
+rule "Test.Email.workoffline"
 when
 $C : Vector()
 ///$E : ClueList()
-$D : Vector((this contains "Prnt.Cable.Light.Green.Steady.Yes")&&(this contains "email.offline.Yes")&&(this not contains "test1"))
+$D : Vector((this contains "Email.offline.Yes")&&(this contains "Email.canSend.No")&&(this not contains "Test.Email.workoffline"))
 then
-	System.out.println("rule 1 fired");
-	$C.add("test1");
+	$C.add("Test.Email.workoffline");
+	SOOHPMain.checkTest1("Test.Email.workoffline");
 end
 
-rule "ClueList is 1"
+rule "Test.Email.junkFolder"
 when
 $C : Vector()
-$D : Vector((this contains "email.canReceive.Yes")&&(this contains "Prnt.Light.Green.Steady.Yes")&&(this not contains "test2"))
+$D : Vector((this contains "email.canReceive.Yes")&&(this contains "Email.offline.No")&&(this not contains "Test.Email.junkFolder"))
 then
-	System.out.println("rule 2 fired");
-	$C.add("test2");
+	$C.add("Test.Email.junkFolder");
+	SOOHPMain.checkTest1("Test.Email.junkFolder");
 end
 
-rule "ClueList is 2"
+rule "Test.Prnt.otherPWRCable"
 when
 $C : Vector()
-$D : Vector((this contains "Prnt.Noise.Grinding.Yes")&&(this contains "Prnt.Light.Orange.Flashing.Yes")&&(this not contains "test3"))
+$D : Vector((this contains "Prnt.Noise.None.Yes")&&(this contains "Prnt.Light.Orange.Flashing.No")&&(this contains "Prnt.Light.Green.Steady.No")&&(this not contains "Test.Prnt.otherPWRCable"))
 then
-	System.out.println("rule 3 fired");
-	$C.add("test3");
+	$C.add("Test.Prnt.otherPWRCable");
+	SOOHPMain.checkTest1("Test.Prnt.otherPWRCable");
 end

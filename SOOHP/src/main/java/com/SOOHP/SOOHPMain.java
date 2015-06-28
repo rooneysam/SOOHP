@@ -65,6 +65,7 @@ public class SOOHPMain {
 	///panels
 	public static JPanel answerPane = new JPanel(new GridLayout(3, 1));
 	public static JPanel topHalf = new JPanel();
+	public static JPanel bottomHalf = new JPanel(new BorderLayout());
 	public static JPanel buttonPanel = new JPanel();
 	///buttons
 	public static JRadioButton yesButton = new JRadioButton("Yes");
@@ -106,7 +107,7 @@ public class SOOHPMain {
 			
 
 			// this bit shouldn't be necessary
-			SelectedQuestion = getBlankQuestion();
+			///SelectedQuestion = getRandomQuestion();
 
 			// Create main vertical split panel
 			JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -121,7 +122,7 @@ public class SOOHPMain {
 			splitPane.add(topHalf);
 
 			// create bottom top half of split panel and add to parent
-			JPanel bottomHalf = new JPanel(new BorderLayout());
+
 			bottomHalf.setMinimumSize(new Dimension(400, 50));
 			bottomHalf.setPreferredSize(new Dimension(450, 300));
 			splitPane.add(bottomHalf);
@@ -135,7 +136,7 @@ public class SOOHPMain {
 						
 			// /answer buttons
 			answerPane.setOpaque(true);
-			answerPane.setBackground(Color.BLUE);			
+///			answerPane.setBackground(Color.BLUE);			
 			
 			bottomHalf.add(answerPane, BorderLayout.NORTH);
 			///ok button
@@ -167,7 +168,6 @@ public class SOOHPMain {
 		public void showTypeScreen() {
 			questionTextArea.setText("Please choose a problem type from the dropdown box and press Select to start");
 
-			
 			///the type choice combo box pulls the list of question types from the questionTypes Vector
 			///JComboBox typeChoice = new JComboBox();
 			for(int b = 0; b < questionTypes.size(); b++){
@@ -184,10 +184,12 @@ public class SOOHPMain {
 			exitButton.addMouseListener(myExitButtonHandler);
 			exitButton.setActionCommand("EXIT");
 			buttonPanel.add(exitButton, BorderLayout.WEST);
-			selectButton.setVerticalTextPosition(AbstractButton.CENTER);
-			selectButton.setHorizontalTextPosition(AbstractButton.TRAILING);
+//			selectButton.setVerticalTextPosition(AbstractButton.CENTER);
+//			selectButton.setHorizontalTextPosition(AbstractButton.TRAILING);
 			selectButton.addMouseListener(mySelectButtonHandler);
 			selectButton.setActionCommand("Select");
+			selectButton.setEnabled(false);
+			selectButton.setVisible(false);
 			buttonPanel.add(selectButton, BorderLayout.EAST);
 		}
 
@@ -197,28 +199,47 @@ public class SOOHPMain {
 			myButtonGroup.add(noButton);
 			RadioListener myRadioListener = null;
 
-			
 			yesButton.setActionCommand(".Yes");
 			myRadioListener = new RadioListener();
 			yesButton.addActionListener(myRadioListener);
 			noButton.setActionCommand(".No");
 			noButton.addActionListener(myRadioListener);
 			
-			answerPane.add(yesButton, BorderLayout.NORTH);
-			answerPane.add(noButton, BorderLayout.SOUTH);
-			
-			okButton.setVerticalTextPosition(AbstractButton.CENTER);
-			okButton.setHorizontalTextPosition(AbstractButton.TRAILING);
-			// attach handler to assert items into working memory
 			okButton.addMouseListener(myOKButtonHandler);
 			okButton.setActionCommand("OK");
-			exitButton.addMouseListener(myExitButtonHandler);
-			exitButton.setActionCommand("EXIT");
-			buttonPanel.add(exitButton, BorderLayout.WEST);
-			buttonPanel.add(okButton, BorderLayout.EAST);
-			buttonPanel.setOpaque(true);
-			buttonPanel.setBackground(Color.GREEN);
 			
+			answerPane.remove(typeChoice);
+			answerPane.add(yesButton, BorderLayout.NORTH);
+			answerPane.add(noButton, BorderLayout.SOUTH);
+			answerPane.repaint();
+			///answerPane.setBackground(Color.GREEN);
+			noButton.setVisible(true);
+			noButton.repaint();
+			yesButton.setVisible(true);
+			yesButton.repaint();
+			
+			
+			
+			buttonPanel.repaint();
+			buttonPanel.removeAll();
+			buttonPanel.add(okButton, BorderLayout.EAST);
+			topHalf.repaint();
+			bottomHalf.repaint();
+			///buttonPanel.setOpaque(true);
+			SelectedQuestion = getRandomQuestion();
+			questionTextArea.setText(SelectedQuestion.getQuestionText());
+
+//			okButton.setVerticalTextPosition(AbstractButton.CENTER);
+//			okButton.setHorizontalTextPosition(AbstractButton.TRAILING);
+			// attach handler to assert items into working memory
+
+//			exitButton.addMouseListener(myExitButtonHandler);
+//			exitButton.setActionCommand("EXIT");
+//			buttonPanel.add(exitButton, BorderLayout.WEST);
+
+//			buttonPanel.setBackground(Color.GREEN);
+			frame.setVisible(true);
+
 			System.out.println("Question Screen Called");
 		}
 
@@ -229,6 +250,7 @@ public class SOOHPMain {
 	 */
 	public static class okButtonHandler extends MouseAdapter {
 		public void mouseReleased(MouseEvent e) {
+
 			///output.setText(" button pressed is: " + SelectedAnswer);
 			JButton button = (JButton) e.getComponent();
 			// /check if a test is requested if so display
@@ -237,17 +259,13 @@ public class SOOHPMain {
 			System.out.println("currentClueList is: "
 			+ clueList.toString());
 			checkForTest();
-//			if (clueList.toString().contains("test5")) {
-//				questionTextArea.setText("try test5");
-//			} else {
-				if (!(askedQuestions.containsAll(allQuestions))) {
+				if (!(typeQuestions.isEmpty())) {
 					SelectedQuestion = SOOHPMain.getRandomQuestion();
 					questionTextArea
 							.setText(SelectedQuestion.getQuestionText());
 				} else {
 					System.out.println("No more questions");
-//				}
-
+					questionTextArea.setText("No more questions");
 			}
 		}
 	}
@@ -266,7 +284,8 @@ public class SOOHPMain {
 				typeQuestions.add(allQuestions.get(d));
 				}
 			}
-			
+			System.out.println("typeQuestion size : " + typeQuestions
+					.size());
 			SOOHPUI.showQuestionScreen();
 		}
 	}
@@ -307,6 +326,8 @@ public class SOOHPMain {
 	public static class ComboListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			SelectedType = (String) typeChoice.getSelectedItem();
+			selectButton.setEnabled(true);
+			selectButton.setVisible(true);
 		}
 	}
 	
@@ -379,35 +400,30 @@ public class SOOHPMain {
 
 	public static Question getRandomQuestion() {
 		Random rnd = new Random();
-		Question nextQuestion = (allQuestions.get(rnd.nextInt(allQuestions
-				.size())));
-		while (askedQuestions.contains(nextQuestion)) {
-			System.out.println("we already asked the question : "
-					+ (nextQuestion.getQuestionName()));
-			nextQuestion = (allQuestions.get(rnd.nextInt(allQuestions.size())));
-		}
-		Question randomQuestion = (nextQuestion);
-		///System.out.println("we have not yet asked the question : "
-		///		+ (nextQuestion.getQuestionName()));
-		askedQuestions.add(nextQuestion);
-		return randomQuestion;
+		int q = rnd.nextInt(typeQuestions.size());
+		System.out.println("typeQuestion size : " + typeQuestions.size());
+		Question nextQuestion = (typeQuestions.get(q));
+		///Question randomQuestion = (nextQuestion);
+		typeQuestions.remove(typeQuestions.get(q));
+		return nextQuestion;
 	}
 
 	public static void checkForTest(){
-		if (clueList.toString().contains("test1")) {
+		if (clueList.toString().contains("Test.")) {
 			questionTextArea.setText("try test1");
 			System.out.println("try test1");
-		}
-		if (clueList.toString().contains("test2")) {
-			questionTextArea.setText("try test2");
-			System.out.println("try test2");
-		}
-		if (clueList.toString().contains("test3")) {
-			questionTextArea.setText("try test3");
-			System.out.println("try test3");
-		}
+		}	
 	}
 
+	public static void checkTest1(String testName){
+		
+		for (int g = 0 ; g < testQuestions.size();g++){
+			if (testQuestions.get(g).getQuestionName().equals(testName)){
+			///	questionTextArea.setText(testQuestions.get(g).getQuestionText());
+				System.out.println(testQuestions.get(g).getQuestionText());
+			}
+		}
+	}
 }
 
 // /this is the look and feel code put it in createAndShowGUI
