@@ -1,8 +1,10 @@
 package com.SOOHP;
 
 public class Question {
+	
 	private String QuestionName;
 	private String QuestionText;
+	private String QuestionType;
 	private int successful;
 	private boolean asked;
 
@@ -10,13 +12,18 @@ public class Question {
 
 	}
 
-	public Question(String newQuestionName, String newQuestionText) {
+	public Question(String newQuestionType, String newQuestionName, String newQuestionText) {
+		this.QuestionType = newQuestionType;
 		this.QuestionName = newQuestionName;
 		this.QuestionText = newQuestionText;
 		successful = 0;
 		asked = false;
 	}
 
+	public String getQuestionType() {
+		return QuestionType;
+	}
+	
 	public String getQuestionName() {
 		return QuestionName;
 	}
@@ -32,7 +39,7 @@ public class Question {
 	public void decrementSuccessful() {
 		successful--;
 	}
-
+	
 	public void setAsked() {
 		asked = true;
 	}

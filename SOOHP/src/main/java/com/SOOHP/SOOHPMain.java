@@ -27,6 +27,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.JComboBox;
+
 
 
 
@@ -41,24 +43,37 @@ import java.util.Random;
 
 public class SOOHPMain {
 	static Vector<Question> allQuestions = new Vector<Question>();
+	static Vector<Question> typeQuestions = new Vector<Question>();
+	static Vector<Question> testQuestions = new Vector<Question>();
 	static Vector<Question> askedQuestions = new Vector<Question>();
+	public static Vector<String> questionTypes = new Vector<String>();
 	public static String SelectedAnswer;
+	public static String SelectedType;
 	public static JFrame frame = new JFrame("SOOHP");
 	public static JTextArea questionTextArea;
-	///public static JTextArea output;
 	public static Question SelectedQuestion;
 	public static SOOHPCallback callback;
 	public static Vector<String> clueList = new Vector<String>();
+	public static JComboBox typeChoice = new JComboBox();
 	///button handlers
 	public static SOOHPMain.okButtonHandler myOKButtonHandler = new okButtonHandler();
 	public static SOOHPMain.exitButtonHandler myExitButtonHandler = new exitButtonHandler();
 	public static SOOHPMain.yesButtonHandler myYesButtonHandler = new yesButtonHandler();
 	public static SOOHPMain.noButtonHandler myNoButtonHandler = new noButtonHandler();
 	public static SOOHPMain.skipButtonHandler mySkipButtonHandler = new skipButtonHandler();
+	public static SOOHPMain.selectButtonHandler mySelectButtonHandler = new selectButtonHandler();
 	///panels
 	public static JPanel answerPane = new JPanel(new GridLayout(3, 1));
+	public static JPanel topHalf = new JPanel();
+	public static JPanel buttonPanel = new JPanel();
 	///buttons
 	public static JRadioButton yesButton = new JRadioButton("Yes");
+	public static JRadioButton noButton = new JRadioButton("No");
+	public static JButton okButton = new JButton("OK");
+	public static JButton selectButton = new JButton("Select");
+	public static JButton exitButton = new JButton("Exit");
+	
+	
 	
 	public static void main(String[] args) {
 		new SOOHPMain().init(true);
@@ -84,17 +99,11 @@ public class SOOHPMain {
 
 	@SuppressWarnings("serial")
 	public static class SOOHPUI extends JPanel {
-		// JFrame frame = new JFrame("SOOHP");
-		// private JTextArea questionTextArea;
-		// private JTextArea output;
-		// private Question SelectedQuestion;
-		// private SOOHPCallback callback;
-		// private Vector<String> clueList = new Vector<String>();
 
 		public SOOHPUI(Vector<Question> allQs, SOOHPCallback newCallback) {
 			super(new BorderLayout());
 			callback = newCallback;
-			RadioListener myListener = null;
+			
 
 			// this bit shouldn't be necessary
 			SelectedQuestion = getBlankQuestion();
@@ -104,7 +113,7 @@ public class SOOHPMain {
 			add(splitPane, BorderLayout.CENTER);
 
 			// create top half of split panel and add to parent
-			JPanel topHalf = new JPanel();
+
 			topHalf.setLayout(new BoxLayout(topHalf, BoxLayout.X_AXIS));
 			topHalf.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
 			topHalf.setMinimumSize(new Dimension(400, 50));
@@ -122,59 +131,21 @@ public class SOOHPMain {
 					ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			topHalf.add(questionTextPane, BorderLayout.CENTER);
-			questionTextArea.setText("Press OK to start");
 			
-			
+						
 			// /answer buttons
-			///JPanel answerPane = new JPanel(new GridLayout(3, 1));
 			answerPane.setOpaque(true);
-			answerPane.setBackground(Color.BLUE);
+			answerPane.setBackground(Color.BLUE);			
 			
-			yesButton.setActionCommand(".Yes");
-			myListener = new RadioListener();
-			yesButton.addActionListener(myListener);
-			JRadioButton noButton = new JRadioButton("No");
-			noButton.setActionCommand(".No");
-			noButton.addActionListener(myListener);
-			ButtonGroup group = new ButtonGroup();
-			group.add(yesButton);
-			group.add(noButton);
-
-			answerPane.add(noButton, BorderLayout.SOUTH);
 			bottomHalf.add(answerPane, BorderLayout.NORTH);
 			///ok button
-			JPanel buttonPanel = new JPanel();
 			
-			JButton okButton = new JButton("OK");
-			okButton.setVerticalTextPosition(AbstractButton.CENTER);
-			okButton.setHorizontalTextPosition(AbstractButton.TRAILING);
-			// attach handler to assert items into working memory
-			okButton.addMouseListener(myOKButtonHandler);
-			okButton.setActionCommand("OK");
-			
-			JButton exitButton = new JButton("EXIT");
-			exitButton.addMouseListener(myExitButtonHandler);
-			exitButton.setActionCommand("EXIT");
-			buttonPanel.add(exitButton, BorderLayout.WEST);
 
-			
-			buttonPanel.add(okButton, BorderLayout.EAST);
-
-			
-			
-			buttonPanel.setOpaque(true);
-			buttonPanel.setBackground(Color.GREEN);
 			bottomHalf.add(buttonPanel, BorderLayout.SOUTH);
-//			output = new JTextArea(1, 5);
-//			output.setEditable(false);
-//			callback.setOutput(output);
 			
-			//to be put in show question pane
-			
-			
-			//call showTypeScreen here
-			showQuestionScreen();
-			
+			//call showQuestionScreen here
+			///showQuestionScreen();
+			showTypeScreen();
 		}
 
 		/**
@@ -192,14 +163,63 @@ public class SOOHPMain {
 			frame.setVisible(true);
 		}
 
-		// /these 2 methods need to be filled in
+		///these methods call the different client screens
 		public void showTypeScreen() {
-			System.out.println("Type Screen Called");
+			questionTextArea.setText("Please choose a problem type from the dropdown box and press Select to start");
+
+			
+			///the type choice combo box pulls the list of question types from the questionTypes Vector
+			///JComboBox typeChoice = new JComboBox();
+			for(int b = 0; b < questionTypes.size(); b++){
+				if (!questionTypes.get(b).equals("Test")){
+				typeChoice.addItem(questionTypes.get(b));
+				}
+			}
+			
+			ComboListener myComboListener = null;
+			myComboListener = new ComboListener();
+			typeChoice.addActionListener(myComboListener);
+			
+			answerPane.add(typeChoice);
+			exitButton.addMouseListener(myExitButtonHandler);
+			exitButton.setActionCommand("EXIT");
+			buttonPanel.add(exitButton, BorderLayout.WEST);
+			selectButton.setVerticalTextPosition(AbstractButton.CENTER);
+			selectButton.setHorizontalTextPosition(AbstractButton.TRAILING);
+			selectButton.addMouseListener(mySelectButtonHandler);
+			selectButton.setActionCommand("Select");
+			buttonPanel.add(selectButton, BorderLayout.EAST);
 		}
 
 		public static void showQuestionScreen() {
+			ButtonGroup myButtonGroup = new ButtonGroup();
+			myButtonGroup.add(yesButton);
+			myButtonGroup.add(noButton);
+			RadioListener myRadioListener = null;
 
+			
+			yesButton.setActionCommand(".Yes");
+			myRadioListener = new RadioListener();
+			yesButton.addActionListener(myRadioListener);
+			noButton.setActionCommand(".No");
+			noButton.addActionListener(myRadioListener);
+			
 			answerPane.add(yesButton, BorderLayout.NORTH);
+			answerPane.add(noButton, BorderLayout.SOUTH);
+			
+			okButton.setVerticalTextPosition(AbstractButton.CENTER);
+			okButton.setHorizontalTextPosition(AbstractButton.TRAILING);
+			// attach handler to assert items into working memory
+			okButton.addMouseListener(myOKButtonHandler);
+			okButton.setActionCommand("OK");
+			exitButton.addMouseListener(myExitButtonHandler);
+			exitButton.setActionCommand("EXIT");
+			buttonPanel.add(exitButton, BorderLayout.WEST);
+			buttonPanel.add(okButton, BorderLayout.EAST);
+			buttonPanel.setOpaque(true);
+			buttonPanel.setBackground(Color.GREEN);
+			
+			System.out.println("Question Screen Called");
 		}
 
 	}
@@ -214,18 +234,40 @@ public class SOOHPMain {
 			// /check if a test is requested if so display
 			callback.testClues((JFrame) button.getTopLevelAncestor(), clueList,
 					SelectedQuestion.getQuestionName() + SelectedAnswer);
-			if (clueList.toString().contains("test5")) {
-				questionTextArea.setText("try test5");
-			} else {
+			System.out.println("currentClueList is: "
+			+ clueList.toString());
+			checkForTest();
+//			if (clueList.toString().contains("test5")) {
+//				questionTextArea.setText("try test5");
+//			} else {
 				if (!(askedQuestions.containsAll(allQuestions))) {
 					SelectedQuestion = SOOHPMain.getRandomQuestion();
 					questionTextArea
 							.setText(SelectedQuestion.getQuestionText());
 				} else {
 					System.out.println("No more questions");
-				}
+//				}
 
 			}
+		}
+	}
+	
+	public static class selectButtonHandler extends MouseAdapter {
+		public void mouseReleased(MouseEvent e) {
+			///code goes here
+			System.out.println ("AllQuestions size: "+ allQuestions.size());
+			for(int c = 0; c < allQuestions.size(); c++){
+				if ((allQuestions.get(c).getQuestionType()).equals("Test")){
+				testQuestions.add(allQuestions.get(c));
+				}
+			}
+			for(int d = 0; d < allQuestions.size(); d++){
+				if ((allQuestions.get(d).getQuestionType()).equals(SelectedType)){
+				typeQuestions.add(allQuestions.get(d));
+				}
+			}
+			
+			SOOHPUI.showQuestionScreen();
 		}
 	}
 	
@@ -235,7 +277,7 @@ public class SOOHPMain {
 			System.exit(0);
 		}
 	}
-	
+		
 	public static class yesButtonHandler extends MouseAdapter {
 		public void mouseReleased(MouseEvent e) {
 			///code goes here
@@ -261,6 +303,13 @@ public class SOOHPMain {
 		}
 	}
 
+	// /Listens to the combo box
+	public static class ComboListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			SelectedType = (String) typeChoice.getSelectedItem();
+		}
+	}
+	
 	public static class SOOHPCallback {
 		KieContainer kcontainer;
 		JTextArea output;
@@ -276,10 +325,10 @@ public class SOOHPMain {
 		public void testClues(JFrame frame, Vector<String> currentClueList,
 				String selectedAnswer) {
 			currentClueList.add(selectedAnswer);
-			System.out.println("currentClueList is: "
-					+ currentClueList.toString());
-			System.out.println("askedQuestions is is: "
-					+ askedQuestions.toString());
+			///System.out.println("currentClueList is: "
+					///+ currentClueList.toString());
+			///System.out.println("askedQuestions is is: "
+					///+ askedQuestions.toString());
 			// session listed in META-INF/kmodule.xml file
 			KieSession ksession = kcontainer.newKieSession("SOOHPKS");
 			ksession.insert(currentClueList);
@@ -290,8 +339,6 @@ public class SOOHPMain {
 	/**
 	 * Methods  
 	 */
-	// /these methods call the different client screens
-
 	public void scanQuestions() {
 		// /test read in questions from file
 		try {
@@ -299,30 +346,30 @@ public class SOOHPMain {
 			Scanner questionScanner = new Scanner(new File(
 					"C:\\allQuestions.V2.csv")).useDelimiter("\n");
 			while (questionScanner.hasNext()) {
-				// System.out.println(questionScanner.next());
 				// /this bit passes each line to a separate scanner which turns
 				// it into a question
 				allQuestions.add(scanLine(questionScanner.next()));
+			}
+			for (int x = 0; x < allQuestions.size(); x++){
+				if (!(questionTypes.contains(allQuestions.get(x).getQuestionType()))){
+					questionTypes.add(allQuestions.get(x).getQuestionType());
+				}
 			}
 			questionScanner.close();
 		} catch (IOException ioe) {
 			System.out.println(ioe.getMessage());
 		}
-		for (int q = 0; q < allQuestions.size(); q++) {
-			System.out.println("Question Name: "
-					+ (allQuestions.get(q).getQuestionName())
-					+ ", Question Text: "
-					+ (allQuestions.get(q).getQuestionText()));
-		}
+
 	}
 
 	public Question scanLine(String line) {
 		@SuppressWarnings("resource")
 		Scanner lineScanner = new Scanner(line);
 		lineScanner.useDelimiter(",");
+		String qType = lineScanner.next();
 		String qName = lineScanner.next();
 		String qText = lineScanner.next();
-		return new Question(qName, qText);
+		return new Question(qType,qName, qText);
 	}
 
 	public static Question getBlankQuestion() {
@@ -340,11 +387,27 @@ public class SOOHPMain {
 			nextQuestion = (allQuestions.get(rnd.nextInt(allQuestions.size())));
 		}
 		Question randomQuestion = (nextQuestion);
-		System.out.println("we have not yet asked the question : "
-				+ (nextQuestion.getQuestionName()));
+		///System.out.println("we have not yet asked the question : "
+		///		+ (nextQuestion.getQuestionName()));
 		askedQuestions.add(nextQuestion);
 		return randomQuestion;
 	}
+
+	public static void checkForTest(){
+		if (clueList.toString().contains("test1")) {
+			questionTextArea.setText("try test1");
+			System.out.println("try test1");
+		}
+		if (clueList.toString().contains("test2")) {
+			questionTextArea.setText("try test2");
+			System.out.println("try test2");
+		}
+		if (clueList.toString().contains("test3")) {
+			questionTextArea.setText("try test3");
+			System.out.println("try test3");
+		}
+	}
+
 }
 
 // /this is the look and feel code put it in createAndShowGUI
