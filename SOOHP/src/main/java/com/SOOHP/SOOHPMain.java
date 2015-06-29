@@ -5,6 +5,7 @@ package com.SOOHP;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +29,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JComboBox;
+
 
 
 
@@ -62,6 +64,8 @@ public class SOOHPMain {
 	public static SOOHPMain.noButtonHandler myNoButtonHandler = new noButtonHandler();
 	public static SOOHPMain.skipButtonHandler mySkipButtonHandler = new skipButtonHandler();
 	public static SOOHPMain.selectButtonHandler mySelectButtonHandler = new selectButtonHandler();
+	public static SOOHPMain.testYesButtonHandler myTestYesButtonHandler = new testYesButtonHandler();
+	public static SOOHPMain.testNoButtonHandler myTestNoButtonHandler = new testNoButtonHandler();
 	///panels
 	public static JPanel answerPane = new JPanel(new GridLayout(3, 1));
 	public static JPanel topHalf = new JPanel();
@@ -73,6 +77,9 @@ public class SOOHPMain {
 	public static JButton okButton = new JButton("OK");
 	public static JButton selectButton = new JButton("Select");
 	public static JButton exitButton = new JButton("Exit");
+	public static JButton testYesButton = new JButton("testYes");
+	public static JButton testNoButton = new JButton("testNo");
+	
 	
 	
 	
@@ -105,7 +112,10 @@ public class SOOHPMain {
 			super(new BorderLayout());
 			callback = newCallback;
 			
-
+			testNoButton.addMouseListener(myTestNoButtonHandler);
+			exitButton.addMouseListener(myExitButtonHandler);
+			selectButton.addMouseListener(mySelectButtonHandler);
+			okButton.addMouseListener(myOKButtonHandler);
 			// this bit shouldn't be necessary
 			///SelectedQuestion = getRandomQuestion();
 
@@ -128,6 +138,9 @@ public class SOOHPMain {
 			splitPane.add(bottomHalf);
 			questionTextArea = new JTextArea(1, 10);
 			questionTextArea.setEditable(false);
+			questionTextArea.setFont(new Font("Serif", Font.ITALIC, 20));
+			questionTextArea.setLineWrap(true);
+			questionTextArea.setWrapStyleWord(true);
 			JScrollPane questionTextPane = new JScrollPane(questionTextArea,
 					ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -181,12 +194,10 @@ public class SOOHPMain {
 			typeChoice.addActionListener(myComboListener);
 			
 			answerPane.add(typeChoice);
-			exitButton.addMouseListener(myExitButtonHandler);
+
 			exitButton.setActionCommand("EXIT");
 			buttonPanel.add(exitButton, BorderLayout.WEST);
-//			selectButton.setVerticalTextPosition(AbstractButton.CENTER);
-//			selectButton.setHorizontalTextPosition(AbstractButton.TRAILING);
-			selectButton.addMouseListener(mySelectButtonHandler);
+
 			selectButton.setActionCommand("Select");
 			selectButton.setEnabled(false);
 			selectButton.setVisible(false);
@@ -205,44 +216,45 @@ public class SOOHPMain {
 			noButton.setActionCommand(".No");
 			noButton.addActionListener(myRadioListener);
 			
-			okButton.addMouseListener(myOKButtonHandler);
+
 			okButton.setActionCommand("OK");
 			
 			answerPane.remove(typeChoice);
 			answerPane.add(yesButton, BorderLayout.NORTH);
 			answerPane.add(noButton, BorderLayout.SOUTH);
-			answerPane.repaint();
-			///answerPane.setBackground(Color.GREEN);
-			noButton.setVisible(true);
-			noButton.repaint();
-			yesButton.setVisible(true);
-			yesButton.repaint();
-			
-			
-			
-			buttonPanel.repaint();
+
+			buttonPanel.remove(testNoButton);
+			buttonPanel.remove(testYesButton);
 			buttonPanel.removeAll();
 			buttonPanel.add(okButton, BorderLayout.EAST);
-			topHalf.repaint();
-			bottomHalf.repaint();
-			///buttonPanel.setOpaque(true);
+			buttonPanel.setVisible(true);
+			System.out.println("a");
 			SelectedQuestion = getRandomQuestion();
+			System.out.println("b");
 			questionTextArea.setText(SelectedQuestion.getQuestionText());
-
-//			okButton.setVerticalTextPosition(AbstractButton.CENTER);
-//			okButton.setHorizontalTextPosition(AbstractButton.TRAILING);
-			// attach handler to assert items into working memory
-
-//			exitButton.addMouseListener(myExitButtonHandler);
-//			exitButton.setActionCommand("EXIT");
-//			buttonPanel.add(exitButton, BorderLayout.WEST);
-
-//			buttonPanel.setBackground(Color.GREEN);
+			System.out.println("c");
 			frame.setVisible(true);
 
 			System.out.println("Question Screen Called");
 		}
 
+		public static void showTestScreen(String testName) {
+			for (int g = 0 ; g < testQuestions.size();g++){
+				if (testQuestions.get(g).getQuestionName().equals(testName)){
+					System.out.println(testQuestions.get(g).getQuestionText());
+					questionTextArea.setText(testQuestions.get(g).getQuestionText());
+				}
+				testNoButton.setActionCommand("testNo");
+				answerPane.removeAll();
+				buttonPanel.removeAll();
+				buttonPanel.add(testYesButton, BorderLayout.EAST);
+				buttonPanel.add(testNoButton, BorderLayout.EAST);
+				
+				frame.setVisible(true);
+			}
+		}
+		
+		
 	}
 
 	/**
@@ -258,8 +270,11 @@ public class SOOHPMain {
 					SelectedQuestion.getQuestionName() + SelectedAnswer);
 			System.out.println("currentClueList is: "
 			+ clueList.toString());
-			checkForTest();
-				if (!(typeQuestions.isEmpty())) {
+//			checkForTest();
+			if (clueList.toString().contains("Test")){
+				System.out.println("test present");
+			}
+			else if (!(typeQuestions.isEmpty())) {
 					SelectedQuestion = SOOHPMain.getRandomQuestion();
 					questionTextArea
 							.setText(SelectedQuestion.getQuestionText());
@@ -273,7 +288,7 @@ public class SOOHPMain {
 	public static class selectButtonHandler extends MouseAdapter {
 		public void mouseReleased(MouseEvent e) {
 			///code goes here
-			System.out.println ("AllQuestions size: "+ allQuestions.size());
+			///System.out.println ("AllQuestions size: "+ allQuestions.size());
 			for(int c = 0; c < allQuestions.size(); c++){
 				if ((allQuestions.get(c).getQuestionType()).equals("Test")){
 				testQuestions.add(allQuestions.get(c));
@@ -315,6 +330,28 @@ public class SOOHPMain {
 		}
 	}
 
+	public static class testYesButtonHandler extends MouseAdapter {
+		public void mouseReleased(MouseEvent e) {
+			///code goes here
+		}
+	}
+	
+	public static class testNoButtonHandler extends MouseAdapter {
+		public void mouseReleased(MouseEvent e) {
+			System.out.println("Count of listeners: " + ((JButton) e.getSource()).getActionListeners().length);
+			///change the word test for the word tried
+			System.out.println("a "+clueList.toString());
+			for (int v =0 ; v < clueList.size();v++){
+				clueList.set(v, clueList.get(v).replace("Test","Tried")); 
+			}
+			
+			System.out.println("b "+ clueList.toString());
+			testNoButton.setEnabled(false);
+			SOOHPUI.showQuestionScreen();
+///			return;
+		}
+	}
+	
 	// /Listens to the radio buttons
 	public static class RadioListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -400,7 +437,12 @@ public class SOOHPMain {
 
 	public static Question getRandomQuestion() {
 		Random rnd = new Random();
-		int q = rnd.nextInt(typeQuestions.size());
+		int q=0;
+		System.out.println("typeQuestionSize is " + typeQuestions.size());
+		if (typeQuestions.size()>1){
+		q = rnd.nextInt(typeQuestions.size());
+		System.out.println("there is more than 1 question left");
+		}
 		System.out.println("typeQuestion size : " + typeQuestions.size());
 		Question nextQuestion = (typeQuestions.get(q));
 		///Question randomQuestion = (nextQuestion);
@@ -408,18 +450,10 @@ public class SOOHPMain {
 		return nextQuestion;
 	}
 
-	public static void checkForTest(){
-		if (clueList.toString().contains("Test.")) {
-			questionTextArea.setText("try test1");
-			System.out.println("try test1");
-		}	
-	}
-
 	public static void checkTest1(String testName){
 		
 		for (int g = 0 ; g < testQuestions.size();g++){
 			if (testQuestions.get(g).getQuestionName().equals(testName)){
-			///	questionTextArea.setText(testQuestions.get(g).getQuestionText());
 				System.out.println(testQuestions.get(g).getQuestionText());
 			}
 		}
