@@ -112,6 +112,7 @@ public class SOOHPMain {
 			super(new BorderLayout());
 			callback = newCallback;
 			
+			testYesButton.addMouseListener(myTestYesButtonHandler);
 			testNoButton.addMouseListener(myTestNoButtonHandler);
 			exitButton.addMouseListener(myExitButtonHandler);
 			selectButton.addMouseListener(mySelectButtonHandler);
@@ -226,6 +227,7 @@ public class SOOHPMain {
 			buttonPanel.remove(testNoButton);
 			buttonPanel.remove(testYesButton);
 			buttonPanel.removeAll();
+			buttonPanel.add(exitButton, BorderLayout.WEST);
 			buttonPanel.add(okButton, BorderLayout.EAST);
 			buttonPanel.setVisible(true);
 			System.out.println("a");
@@ -245,6 +247,7 @@ public class SOOHPMain {
 					questionTextArea.setText(testQuestions.get(g).getQuestionText());
 				}
 				testNoButton.setActionCommand("testNo");
+				testYesButton.setActionCommand("testYes");
 				answerPane.removeAll();
 				buttonPanel.removeAll();
 				buttonPanel.add(testYesButton, BorderLayout.EAST);
@@ -253,6 +256,25 @@ public class SOOHPMain {
 				frame.setVisible(true);
 			}
 		}
+		
+		public static void showSuccessScreen() {
+			System.out.println("Success");
+			testYesButton.setVisible(false);
+			buttonPanel.remove(testYesButton);
+			testNoButton.setVisible(false);
+			buttonPanel.remove(testNoButton);
+			buttonPanel.add(exitButton);
+			questionTextArea.setText("Success! SOOHP is glad it could fix your problem details of the fix have been uploaded to make future diagnoses more efficient.");
+			frame.setVisible(true);
+//				testNoButton.setActionCommand("testNo");
+//				answerPane.removeAll();
+//				buttonPanel.removeAll();
+//				buttonPanel.add(testYesButton, BorderLayout.EAST);
+//				buttonPanel.add(testNoButton, BorderLayout.EAST);
+			
+//				
+//				frame.setVisible(true);
+			}
 		
 		
 	}
@@ -280,7 +302,10 @@ public class SOOHPMain {
 							.setText(SelectedQuestion.getQuestionText());
 				} else {
 					System.out.println("No more questions");
-					questionTextArea.setText("No more questions");
+					okButton.setVisible(false);
+					buttonPanel.remove(okButton);
+					questionTextArea.setText("Unfortunately SOOHP has run out of ideas on how to fix your problem, details of the issue will be uploaded to assist support staff.");
+					frame.setVisible(true);
 			}
 		}
 	}
@@ -333,6 +358,7 @@ public class SOOHPMain {
 	public static class testYesButtonHandler extends MouseAdapter {
 		public void mouseReleased(MouseEvent e) {
 			///code goes here
+			SOOHPUI.showSuccessScreen();
 		}
 	}
 	
@@ -346,7 +372,9 @@ public class SOOHPMain {
 			}
 			
 			System.out.println("b "+ clueList.toString());
-			testNoButton.setEnabled(false);
+			buttonPanel.remove(testYesButton);
+			buttonPanel.remove(testNoButton);
+			frame.setVisible(true);
 			SOOHPUI.showQuestionScreen();
 ///			return;
 		}
