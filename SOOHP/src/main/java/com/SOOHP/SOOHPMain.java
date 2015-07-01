@@ -117,8 +117,6 @@ public class SOOHPMain {
 			exitButton.addMouseListener(myExitButtonHandler);
 			selectButton.addMouseListener(mySelectButtonHandler);
 			okButton.addMouseListener(myOKButtonHandler);
-			// this bit shouldn't be necessary
-			///SelectedQuestion = getRandomQuestion();
 
 			// Create main vertical split panel
 			JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);

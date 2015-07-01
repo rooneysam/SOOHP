@@ -5,7 +5,6 @@ public class Question {
 	private String QuestionName;
 	private String QuestionText;
 	private String QuestionType;
-	private int successful;
 	private boolean asked;
 
 	public Question() {
@@ -16,7 +15,6 @@ public class Question {
 		this.QuestionType = newQuestionType;
 		this.QuestionName = newQuestionName;
 		this.QuestionText = newQuestionText;
-		successful = 0;
 		asked = false;
 	}
 
@@ -32,14 +30,6 @@ public class Question {
 		return QuestionText;
 	}
 
-	public void incrementSuccessful() {
-		successful++;
-	}
-
-	public void decrementSuccessful() {
-		successful--;
-	}
-	
 	public void setAsked() {
 		asked = true;
 	}

@@ -3,8 +3,8 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="con" path="DROOLS/Drools"/>
-	<classpathentry kind="lib" path="C:/Users/sam/Downloads/drools-core-5.5.0.Final.jar">
+	<classpathentry kind="con" path="DROOLS/Drools"/>
+	<classpathentry kind="lib" path="C:/Users/Sam/Downloads/drools-core-5.5.0.Final.jar">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 			<attribute name="maven.groupId" value="org.drools"/>
@@ -13,7 +13,7 @@
 			<attribute name="maven.scope" value="compile"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/sam/Downloads/knowledge-api-5.5.0.Final.jar">
+	<classpathentry kind="lib" path="C:/Users/Sam/Downloads/knowledge-api-5.5.0.Final.jar">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 			<attribute name="maven.groupId" value="org.drools"/>
@@ -22,6 +22,8 @@
 			<attribute name="maven.scope" value="compile"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/sam/Downloads/kie-api.jar" sourcepath="D:/Users/Sam/Drools/Runtime/kie-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sam/Downloads/kie-api.jar" sourcepath="D:/Users/Sam/Drools/Runtime/kie-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sam/AppData/Local/Microsoft/Windows/Temporary Internet Files/Content.IE5/HOGL2BED/slf4j-simple-1.7.12[1].jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sam/AppData/Local/Microsoft/Windows/Temporary Internet Files/Content.IE5/GU7MW865/slf4j-api-1.7.12[1].jar"/>
 	<classpathentry kind="output" path="target"/>
 </classpath>
