@@ -15,11 +15,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.Vector;
-
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -33,15 +35,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JComboBox;
-
-
-
-
-
-
-
-
-
+import org.apache.commons.io.FileUtils;
 ///import javax.swing.SwingUtilities;
 ///import javax.swing.UIManager;
 ///import javax.swing.UnsupportedLookAndFeelException;
@@ -55,16 +49,20 @@ public class SOOHPMain {
 	///these Strings hold the local paths for the installed application
 	public static String pathApplication = "C:\\Program Files\\SOOHP\\Application\\";
 	public static String pathClueLists = "C:\\Program Files\\SOOHP\\ClueLists\\";
-	public static String pathRemoteClueLists = "C:\\Program Files\\SOOHP\\Scripts\\";
-	public static String pathRemoteUpdates = "C:\\Program Files\\SOOHP\\Updates\\";
+	public static String pathScripts = "C:\\Program Files\\SOOHP\\Scripts\\";
+	public static String pathUpdates = "C:\\Program Files\\SOOHP\\Updates\\";
 	
 	///these Strings hold the remote paths for the TEST application
-	public static String pathScripts = "D:\\SOOHPServer\\Scripts\\";
-	public static String pathUpdates = "D:\\SOOHPServer\\Updates\\";
+	
+	
+	public static String pathRemoteClueLists = "D:\\SOOHPServer\\ClueLists\\";
+	public static String pathRemoteUpdates = "D:\\SOOHPServer\\Updates\\";
+	public static String pathPing = "127.0.0.1";
 	
 	///these Strings hold the remote paths for the LIVE application
 	///public static String pathScripts = "\\\\SERV1234.company.com\\SOOHPServer\\Scripts\\";
 	///public static String pathUpdates = "\\\\SERV1234.company.com\\SOOHPServer\\Updates\\";
+	///public static String pathPing = "SERV1234.company.com";
 	
 	static Vector<Question> allQuestions = new Vector<Question>();
 	static Vector<Question> typeQuestions = new Vector<Question>();
@@ -107,20 +105,24 @@ public class SOOHPMain {
 	
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		new SOOHPMain().init(true);
 	}
 
 	public SOOHPMain() {
 	}
 
-	public void init(boolean exitOnClose) {
+	public void init(boolean exitOnClose) throws IOException {
+		//call update checker
+		updateChecker();
+		
 		// KieServices is the factory for all KIE services
 		KieServices ks = KieServices.Factory.get();
 
 		// From the kie services, a container is created from the classpath
 		KieContainer kc = ks.getKieClasspathContainer();
 
+		//read in all the questions from file
 		scanQuestions();
 
 		// The callback is responsible for populating working memory and
@@ -203,6 +205,9 @@ public class SOOHPMain {
 
 		///these methods call the different client screens
 		public void showTypeScreen() {
+			
+			
+			
 			questionTextArea.setText("Please choose a problem type from the dropdown box and press Select to start");
 
 			///the type choice combo box pulls the list of question types from the questionTypes Vector
@@ -212,16 +217,12 @@ public class SOOHPMain {
 				typeChoice.addItem(questionTypes.get(b));
 				}
 			}
-			
 			ComboListener myComboListener = null;
 			myComboListener = new ComboListener();
 			typeChoice.addActionListener(myComboListener);
-			
 			answerPane.add(typeChoice);
-
 			exitButton.setActionCommand("EXIT");
 			buttonPanel.add(exitButton, BorderLayout.WEST);
-
 			selectButton.setActionCommand("Select");
 			selectButton.setEnabled(false);
 			selectButton.setVisible(false);
@@ -301,7 +302,7 @@ public class SOOHPMain {
 			testNoButton.setVisible(false);
 			buttonPanel.remove(testNoButton);
 			buttonPanel.add(finishedButton);
-			questionTextArea.setText("Success! SOOHP is glad it could fix your problem details of the fix have been uploaded to make future diagnoses more efficient.");
+			questionTextArea.setText("Success! SOOHP is glad it could fix your problem details of the fix will be uploaded to make future diagnoses more efficient.");
 			frame.setVisible(true);
 //				testNoButton.setActionCommand("testNo");
 //				answerPane.removeAll();
@@ -375,7 +376,7 @@ public class SOOHPMain {
 			///code goes here
 		      Date dNow = new Date( );
 		      SimpleDateFormat ft = 
-		      new SimpleDateFormat ("y.M.d.H.m");
+		      new SimpleDateFormat ("y.M.d.H.m.s");
 		      System.out.println("Current Date: " + ft.format(dNow));
 		      String currentDate = (ft.format(dNow));
 			PrintWriter writer;
@@ -483,8 +484,7 @@ public class SOOHPMain {
 		// /test read in questions from file
 		try {
 			@SuppressWarnings("resource")
-			Scanner questionScanner = new Scanner(new File(
-					"C:\\allQuestions.V2.csv")).useDelimiter("\n");
+			Scanner questionScanner = new Scanner(new File(pathApplication+"allQuestions.csv")).useDelimiter("\n");
 			while (questionScanner.hasNext()) {
 				// /this bit passes each line to a separate scanner which turns
 				// it into a question
@@ -540,6 +540,77 @@ public class SOOHPMain {
 			}
 		}
 	}
+
+	public static void updateChecker() throws IOException {
+		File updateFolder = new File(pathUpdates);
+		File currentJarFile = new File(updateFolder+"\\SOOHP.jar");
+		///if an update is ready apply it
+		if (FileUtils.directoryContains(updateFolder,currentJarFile)){
+			String runString = ("cmd /c start copyFiles.bat" );
+			Runtime.getRuntime().exec(runString);
+			System.exit(0);
+		}
+		
+		///check connectivity
+		boolean connected = false;
+		try{
+		InetAddress address = InetAddress.getByName(pathPing);
+		connected = (address.isReachable(3000));
+	}
+    catch (UnknownHostException e) {
+      System.err.println("Unable to lookup server");
+    }
+    catch (IOException e) {
+      System.err.println("Unable to reach server");
+    }
+		
+		if (connected){
+			File clueListFolder = new File(pathClueLists);
+			File remoteUpdateFolder = new File(pathRemoteUpdates);
+
+			File applicationFolder = new File(pathApplication);
+			
+			///upload cluelists
+			if(clueListFolder.list().length>0){
+			      Date dNow = new Date( );
+			      SimpleDateFormat ft = new SimpleDateFormat ("y.M.d");
+			      String currentDate = (ft.format(dNow));
+				File destinationDirectory = new File(pathRemoteClueLists+currentDate);				
+				try {
+					FileUtils.copyDirectory(clueListFolder,destinationDirectory);
+					FileUtils.cleanDirectory(clueListFolder);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			///check file versions
+			File newVersionFile = new File(remoteUpdateFolder+"\\version.txt");
+			File currentVersionFile = new File(applicationFolder+"\\version.txt");
+			
+			File currentQuestionFile = new File(updateFolder+"\\allQuestions.csv");
+			File newJarFile = new File(remoteUpdateFolder+"\\SOOHP.jar");
+			File newQuestionFile = new File(remoteUpdateFolder+"\\allQuestions.csv");
+			Scanner currentVersionScanner = new Scanner(new File(applicationFolder+"\\version.txt")).useDelimiter("\n");
+			Scanner newVersionScanner = new Scanner(new File(remoteUpdateFolder+"\\version.txt")).useDelimiter("\n");
+			int currentVersionNumber = currentVersionScanner.nextInt();
+			System.out.println("current version: " + currentVersionNumber);
+			int newVersionNumber = newVersionScanner.nextInt();
+			System.out.println("new version: " + newVersionNumber);
+			if(newVersionNumber > currentVersionNumber){
+				FileUtils.copyFile(newJarFile, currentJarFile);
+				FileUtils.copyFile(newQuestionFile, currentQuestionFile);
+				FileUtils.copyFile(newVersionFile, currentVersionFile);
+			currentVersionScanner.close();
+			newVersionScanner.close();
+			System.out.println("copied update files");
+			}else{
+				System.out.println("no update needed");
+				}
+		}
+	}
+
 }
 
 // /this is the look and feel code put it in createAndShowGUI
