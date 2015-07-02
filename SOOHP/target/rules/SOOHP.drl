@@ -38,5 +38,5 @@ $C : Vector()
 $D : Vector((this contains "Prnt.Noise.None.Yes")&&(this contains "Prnt.Light.Orange.Flashing.No")&&(this contains "Prnt.Light.Green.Steady.No")&&(this not contains "Tried.Prnt.otherPWRCable"))
 then
 	$C.add("Test.Prnt.otherPWRCable");
-	SOOHPMain.checkTest1("Test.Prnt.otherPWRCable");
+	SOOHPMain.SOOHPUI.showTestScreen("Test.Prnt.otherPWRCable");
 end
