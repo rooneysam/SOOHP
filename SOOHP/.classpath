@@ -23,7 +23,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Sam/Downloads/kie-api.jar" sourcepath="D:/Users/Sam/Drools/Runtime/kie-api.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Sam/AppData/Local/Microsoft/Windows/Temporary Internet Files/Content.IE5/HOGL2BED/slf4j-simple-1.7.12[1].jar"/>
-	<classpathentry kind="lib" path="C:/Users/Sam/AppData/Local/Microsoft/Windows/Temporary Internet Files/Content.IE5/GU7MW865/slf4j-api-1.7.12[1].jar"/>
 	<classpathentry kind="output" path="target"/>
 </classpath>

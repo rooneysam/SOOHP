@@ -12,7 +12,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -34,6 +38,10 @@ import javax.swing.JComboBox;
 
 
 
+
+
+
+
 ///import javax.swing.SwingUtilities;
 ///import javax.swing.UIManager;
 ///import javax.swing.UnsupportedLookAndFeelException;
@@ -44,6 +52,20 @@ import org.kie.api.runtime.KieSession;
 import java.util.Random;
 
 public class SOOHPMain {
+	///these Strings hold the local paths for the installed application
+	public static String pathApplication = "C:\\Program Files\\SOOHP\\Application\\";
+	public static String pathClueLists = "C:\\Program Files\\SOOHP\\ClueLists\\";
+	public static String pathRemoteClueLists = "C:\\Program Files\\SOOHP\\Scripts\\";
+	public static String pathRemoteUpdates = "C:\\Program Files\\SOOHP\\Updates\\";
+	
+	///these Strings hold the remote paths for the TEST application
+	public static String pathScripts = "D:\\SOOHPServer\\Scripts\\";
+	public static String pathUpdates = "D:\\SOOHPServer\\Updates\\";
+	
+	///these Strings hold the remote paths for the LIVE application
+	///public static String pathScripts = "\\\\SERV1234.company.com\\SOOHPServer\\Scripts\\";
+	///public static String pathUpdates = "\\\\SERV1234.company.com\\SOOHPServer\\Updates\\";
+	
 	static Vector<Question> allQuestions = new Vector<Question>();
 	static Vector<Question> typeQuestions = new Vector<Question>();
 	static Vector<Question> testQuestions = new Vector<Question>();
@@ -51,6 +73,7 @@ public class SOOHPMain {
 	public static Vector<String> questionTypes = new Vector<String>();
 	public static String SelectedAnswer;
 	public static String SelectedType;
+	public static String Succeded;
 	public static JFrame frame = new JFrame("SOOHP");
 	public static JTextArea questionTextArea;
 	public static Question SelectedQuestion;
@@ -66,6 +89,7 @@ public class SOOHPMain {
 	public static SOOHPMain.selectButtonHandler mySelectButtonHandler = new selectButtonHandler();
 	public static SOOHPMain.testYesButtonHandler myTestYesButtonHandler = new testYesButtonHandler();
 	public static SOOHPMain.testNoButtonHandler myTestNoButtonHandler = new testNoButtonHandler();
+	public static SOOHPMain.finishedButtonHandler myFinishedButtonHandler = new finishedButtonHandler();
 	///panels
 	public static JPanel answerPane = new JPanel(new GridLayout(3, 1));
 	public static JPanel topHalf = new JPanel();
@@ -79,7 +103,7 @@ public class SOOHPMain {
 	public static JButton exitButton = new JButton("Exit");
 	public static JButton testYesButton = new JButton("testYes");
 	public static JButton testNoButton = new JButton("testNo");
-	
+	public static JButton finishedButton = new JButton("Finished");
 	
 	
 	
@@ -117,6 +141,7 @@ public class SOOHPMain {
 			exitButton.addMouseListener(myExitButtonHandler);
 			selectButton.addMouseListener(mySelectButtonHandler);
 			okButton.addMouseListener(myOKButtonHandler);
+			finishedButton.addMouseListener(myFinishedButtonHandler);
 
 			// Create main vertical split panel
 			JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -228,16 +253,29 @@ public class SOOHPMain {
 			buttonPanel.add(exitButton, BorderLayout.WEST);
 			buttonPanel.add(okButton, BorderLayout.EAST);
 			buttonPanel.setVisible(true);
-			System.out.println("a");
-			SelectedQuestion = getRandomQuestion();
-			System.out.println("b");
-			questionTextArea.setText(SelectedQuestion.getQuestionText());
-			System.out.println("c");
-			frame.setVisible(true);
 
+			if (typeQuestions.size()>0){
+				SelectedQuestion = getRandomQuestion();
+				questionTextArea.setText(SelectedQuestion.getQuestionText());
+			}
+			frame.setVisible(true);
 			System.out.println("Question Screen Called");
 		}
 
+		public static void showNoMoreQuestionsScreen() {
+			Succeded = "unsolved";
+			buttonPanel.remove(testYesButton);
+			buttonPanel.remove(testNoButton);
+			System.out.println("No more questions");
+			okButton.setVisible(false);
+			buttonPanel.removeAll();
+			answerPane.removeAll();
+			questionTextArea.setText("Unfortunately SOOHP has run out of ideas on how to fix your problem, details of the issue will be uploaded to assist support staff.");
+			buttonPanel.add(finishedButton, BorderLayout.EAST);
+			buttonPanel.setVisible(true);
+			frame.setVisible(true);
+		}
+		
 		public static void showTestScreen(String testName) {
 			for (int g = 0 ; g < testQuestions.size();g++){
 				if (testQuestions.get(g).getQuestionName().equals(testName)){
@@ -256,12 +294,13 @@ public class SOOHPMain {
 		}
 		
 		public static void showSuccessScreen() {
+			Succeded = "fixed";
 			System.out.println("Success");
 			testYesButton.setVisible(false);
 			buttonPanel.remove(testYesButton);
 			testNoButton.setVisible(false);
 			buttonPanel.remove(testNoButton);
-			buttonPanel.add(exitButton);
+			buttonPanel.add(finishedButton);
 			questionTextArea.setText("Success! SOOHP is glad it could fix your problem details of the fix have been uploaded to make future diagnoses more efficient.");
 			frame.setVisible(true);
 //				testNoButton.setActionCommand("testNo");
@@ -299,11 +338,7 @@ public class SOOHPMain {
 					questionTextArea
 							.setText(SelectedQuestion.getQuestionText());
 				} else {
-					System.out.println("No more questions");
-					okButton.setVisible(false);
-					buttonPanel.remove(okButton);
-					questionTextArea.setText("Unfortunately SOOHP has run out of ideas on how to fix your problem, details of the issue will be uploaded to assist support staff.");
-					frame.setVisible(true);
+					SOOHPUI.showNoMoreQuestionsScreen();
 			}
 		}
 	}
@@ -335,6 +370,30 @@ public class SOOHPMain {
 		}
 	}
 		
+	public static class finishedButtonHandler extends MouseAdapter {
+		public void mouseReleased(MouseEvent e) {
+			///code goes here
+		      Date dNow = new Date( );
+		      SimpleDateFormat ft = 
+		      new SimpleDateFormat ("y.M.d.H.m");
+		      System.out.println("Current Date: " + ft.format(dNow));
+		      String currentDate = (ft.format(dNow));
+			PrintWriter writer;
+			try {
+				writer = new PrintWriter(pathClueLists+"clueList."+Succeded+"."+currentDate+".txt");
+				writer.println(clueList);
+				writer.println(Succeded);
+				writer.println(currentDate);
+				writer.println((System.getProperty("user.name")));
+				writer.close();
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			System.exit(0);
+		}
+	}
+	
 	public static class yesButtonHandler extends MouseAdapter {
 		public void mouseReleased(MouseEvent e) {
 			///code goes here
@@ -370,11 +429,8 @@ public class SOOHPMain {
 			}
 			
 			System.out.println("b "+ clueList.toString());
-			buttonPanel.remove(testYesButton);
-			buttonPanel.remove(testNoButton);
-			frame.setVisible(true);
-			SOOHPUI.showQuestionScreen();
-///			return;
+
+			SOOHPUI.showNoMoreQuestionsScreen();
 		}
 	}
 	
