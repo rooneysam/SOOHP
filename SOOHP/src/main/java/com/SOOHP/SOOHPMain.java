@@ -58,15 +58,15 @@ public class SOOHPMain {
 	public static String pathUpdates = "C:\\Program Files\\SOOHP\\Updates\\";
 
 	//these Strings hold the remote paths for the TEST application
-	public static String pathRemoteClueLists = "D:\\SOOHPServer\\ClueLists\\";
+	public static String pathRemoteClueLists = "D:\\SOOHPServer\\ClueLists\\SubmittedClueLists\\";
 	public static String pathRemoteUpdates = "D:\\SOOHPServer\\Updates\\";
 	public static String pathPing = "127.0.0.1";
 
 	//these Strings hold the remote paths for the LIVE application
 	//public static String pathScripts =
-	// "\\\\SERV1234.company.com\\SOOHPServer\\Scripts\\";
+	// "\\\\SERV1234.company.com\\SubmittedClueLists\\";
 	//public static String pathUpdates =
-	// "\\\\SERV1234.company.com\\SOOHPServer\\Updates\\";
+	// "\\\\SERV1234.company.com\\Updates\\";
 	//public static String pathPing = "SERV1234.company.com";
 
 	static Vector<Question> allQuestions = new Vector<Question>();
@@ -178,7 +178,7 @@ public class SOOHPMain {
 			bottomHalf.setPreferredSize(new Dimension(450, 300));
 			splitPane.add(bottomHalf);
 			
-			//set up the questin text area
+			//set up the question text area
 			questionTextArea = new JTextArea(1, 10);
 			questionTextArea.setEditable(false);
 			questionTextArea.setFont(new Font("Serif", Font.ITALIC, 20));
@@ -194,7 +194,7 @@ public class SOOHPMain {
 			bottomHalf.add(answerPane, BorderLayout.NORTH);
 			bottomHalf.add(buttonPanel, BorderLayout.SOUTH);
 
-			// call show type screen to becin the user interaction
+			// call show type screen to begin the user interaction
 			showTypeScreen();
 		}
 
@@ -270,10 +270,10 @@ public class SOOHPMain {
 			myButtonGroup.add(yesButton);
 			myButtonGroup.add(noButton);
 			RadioListener myRadioListener = null;
-			yesButton.setActionCommand(".Yes");
+			yesButton.setActionCommand("-Yes");
 			myRadioListener = new RadioListener();
 			yesButton.addActionListener(myRadioListener);
-			noButton.setActionCommand(".No");
+			noButton.setActionCommand("-No");
 			noButton.addActionListener(myRadioListener);
 			okButton.setActionCommand("OK");
 			answerPane.remove(typeChoice);
@@ -416,7 +416,10 @@ public class SOOHPMain {
 				writer = new PrintWriter(pathClueLists + "clueList." + Succeded
 						+ "." + currentDate + ".txt");
 				//the file contains the clue list , whether there was a successful fix, the username, and the date and time
-				writer.println(clueList);
+				String truncatedClueList = (clueList.toString());
+				truncatedClueList = truncatedClueList.replace("[", " " );
+				truncatedClueList = truncatedClueList.replace("]", " " );
+				writer.println(truncatedClueList);
 				writer.println(Succeded);
 				writer.println(currentDate);
 				writer.println((System.getProperty("user.name")));

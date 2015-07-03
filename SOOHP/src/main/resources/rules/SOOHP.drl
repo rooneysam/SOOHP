@@ -17,7 +17,7 @@ rule "Test.Email.workoffline"
 when
 $C : Vector()
 ///$E : ClueList()
-$D : Vector((this contains "Email.offline.Yes")&&(this contains "Email.canSend.No")&&(this not contains "Tried.Email.workoffline"))
+$D : Vector((this contains "Email.offline-Yes")&&(this contains "Email.canSend-No")&&(this not contains "Tried.Email.workoffline"))
 then
 	$C.add("Test.Email.workoffline");
 	SOOHPMain.SOOHPUI.showTestScreen("Test.Email.workoffline");
@@ -26,7 +26,7 @@ end
 rule "Test.Email.junkFolder"
 when
 $C : Vector()
-$D : Vector((this contains "Email.canReceive.Yes")&&(this contains "Email.offline.No")&&(this not contains "Tried.Email.junkFolder"))
+$D : Vector((this contains "Email.canReceive-Yes")&&(this contains "Email.offline-No")&&(this not contains "Tried.Email.junkFolder"))
 then
 	$C.add("Test.Email.junkFolder");
 	SOOHPMain.SOOHPUI.showTestScreen("Test.Email.junkFolder");
@@ -35,7 +35,7 @@ end
 rule "Test.Prnt.otherPWRCable"
 when
 $C : Vector()
-$D : Vector((this contains "Prnt.Noise.None.Yes")&&(this contains "Prnt.Light.Orange.Flashing.No")&&(this contains "Prnt.Light.Green.Steady.No")&&(this not contains "Tried.Prnt.otherPWRCable"))
+$D : Vector((this contains "Prnt.Noise.None-Yes")&&(this contains "Prnt.Light.Orange.Flashing-No")&&(this contains "Prnt.Light.Green.Steady-No")&&(this not contains "Tried.Prnt.otherPWRCable"))
 then
 	$C.add("Test.Prnt.otherPWRCable");
 	SOOHPMain.SOOHPUI.showTestScreen("Test.Prnt.otherPWRCable");
