@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.Vector;
+
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -35,19 +36,28 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JComboBox;
+
 import org.apache.commons.io.FileUtils;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieModule;
+import org.kie.api.builder.Message.Level;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+
 import java.util.Random;
 
 
-//import javax.swing.SwingUtilities;
-//import javax.swing.UIManager;
-//import javax.swing.UnsupportedLookAndFeelException;
+
+
+
+///test
+import org.kie.api.builder.ReleaseId;
+///end test
+import org.kie.api.io.KieResources;
+import org.kie.internal.io.ResourceFactory;
 
 
 public class SOOHPMain {
@@ -118,22 +128,81 @@ public class SOOHPMain {
 		// call update checker
 		updateChecker();
 
-		// KieServices is the factory for all KIE services
+		// KieServices is the KIE services factory 
 		KieServices ks = KieServices.Factory.get();
 
 		// //test
-		// KieFileSystem kfs = ks.newKieFileSystem();
-		// FileInputStream fis = new FileInputStream(
-		// "C:\\Program Files\\SOOHP\\Application\\SOOHP.drl" );
-		// kfs.write( "src/main/resources/simple.drl",
-		// ks.getResources().newInputStreamResource( fis ) );
-		// KieBuilder kieBuilder = ks.newKieBuilder( kfs ).buildAll();
-		//
-		// KieContainer kieContainer =
-		// ks.newKieContainer( ks.getRepository().getDefaultReleaseId() );
-		//
-		// KieBase kieBase = kieContainer.getKieBase();
-		// KieSession kieSession = kieContainer.newKieSession();
+	       	
+		
+		
+//		File file = new File("C:/TEST/SOOHP.drl");
+//		FileInputStream fis = null;
+// 
+//		try {
+//			fis = new FileInputStream(file);
+// 
+//			System.out.println("Total file size to read (in bytes) : "
+//					+ fis.available());
+// 
+//			int content;
+//			while ((content = fis.read()) != -1) {
+//				// convert to char and display it
+//				System.out.print((char) content);
+//			}
+// 
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} finally {
+//			try {
+//				if (fis != null)
+//					fis.close();
+//			} catch (IOException ex) {
+//				ex.printStackTrace();
+//			}
+//		}
+		
+		
+//		 ReleaseId releaseId = ks.newReleaseId( "SOOHP", "SOOHP", "0.1" );	
+//		 KieFileSystem kfs = ks.newKieFileSystem();
+//		 //kfs.generateAndWritePomXML(releaseId);
+//		 FileInputStream fis = new FileInputStream("C:/TEST/SOOHP.drl" );
+//		 kfs.write( "src/main/resources/rules/SOOHP.drl",ks.getResources().newInputStreamResource( fis ) );
+//		 KieBuilder kieBuilder = ks.newKieBuilder( kfs ).buildAll();
+//		 KieContainer kieContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId() );
+//		 KieContainer kc = ks.getKieClasspathContainer();
+//		 KieBase kieBase = kc.getKieBase();
+//		 KieSession kieSession = kc.newKieSession();
+		
+		
+//	    byte[] createKJar(KieServices ks1,ReleaseId releaseId,String pom,String drls) {
+//	    	KieFileSystem kfs = ks.newKieFileSystem();
+//if( pom != null ) {
+//kfs.write("pom.xml", pom);
+//} else {
+//kfs.generateAndWritePomXML(releaseId);
+//}
+//KieResources kr = KieServices.getResources();
+//for (int i = 0; i < drls.length; i++) {
+//if (drls[i] != null) {
+//kfs.write( kr.newByteArrayResource( drls[i].getBytes() ).setSourcePath("my/pkg/drl"+i+".drl") );
+//}
+//}
+//KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
+//if( kb.getResults().hasMessages( org.kie.api.builder.Message.Level.ERROR ) ) {
+//for( org.kie.api.builder.Message result : kb.getResults().getMessages() ) {
+//System.out.println(result.getText());
+//}
+//return null;
+//}
+//InternalKieModule kieModule = (InternalKieModule) ks.getRepository()
+//.getKieModule(releaseId);
+//byte[] jar = kieModule.getBytes();
+//return jar;
+//}
+
+
+		
+		
 		// //endTest
 
 		// From the kie services, a container is created from the classpath
@@ -513,6 +582,50 @@ public class SOOHPMain {
 	 * Methods
 	 */
 	
+	///test
+//    public static KieModule createAndDeployJar( KieServices ks,
+//            ReleaseId releaseId,
+//            String... drls ) {
+//    	byte[] jar = createKJar( ks, releaseId, null, drls );
+//    		return deployJar( ks, jar );
+//}
+    
+//    
+//    public static byte[] createKJar(KieServices ks,
+//    		ReleaseId releaseId,
+//    		String pom,
+//    		String[] drls) {
+//    	KieFileSystem kfs = ks.newKieFileSystem();
+//    	if( pom != null ) {
+//    		kfs.write("pom.xml", pom);
+//    	} else {
+//    		kfs.generateAndWritePomXML(releaseId);
+//    	}
+//    	KieResources kr = KieServices.getResources();
+//    	for (int i = 0; i < drls.length; i++) {
+//    		if (drls[i] != null) {
+//    			kfs.write( kr.newByteArrayResource( drls[i].getBytes()
+//    					).setSourcePath("my/pkg/drl"+i+".drl") );
+//    		}
+//    	}
+//    	KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
+//    	if( kb.getResults().hasMessages(
+//    			org.kie.api.builder.Message.Level.ERROR ) ) {
+//    		for( org.kie.api.builder.Message result :
+//    			kb.getResults().getMessages() ) {
+//    			System.out.println(result.getText());
+//    		}
+//    		return null;
+//    	}
+//    	InternalKieModule kieModule = (InternalKieModule) ks.getRepository()
+//    			.getKieModule(releaseId);
+//    	byte[] jar = kieModule.getBytes();
+//    	return jar;
+//    }
+    ////endtest
+
+	
+	
 	//this method scans in all the questions from a file to the allQuestions array
 	public void scanQuestions() {
 		// /test read in questions from file
@@ -639,25 +752,4 @@ public class SOOHPMain {
 
 }
 
-// /this is the look and feel code put it in createAndShowGUI
-// try
-// {
-// try {
-// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-// } catch (ClassNotFoundException e) {
-// // TODO Auto-generated catch block
-// e.printStackTrace();
-// } catch (InstantiationException e) {
-// // TODO Auto-generated catch block
-// e.printStackTrace();
-// } catch (IllegalAccessException e) {
-// // TODO Auto-generated catch block
-// e.printStackTrace();
-// }
-// JFrame.setDefaultLookAndFeelDecorated(true);
-// SwingUtilities.updateComponentTreeUI(this.frame);
-// }
-// catch (UnsupportedLookAndFeelException e)
-// {
-// System.out.println(e);
-// }
+
