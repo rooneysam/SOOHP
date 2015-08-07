@@ -46,6 +46,7 @@ import org.kie.api.builder.KieModule;
 import org.kie.api.builder.Message.Level;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.conf.ClockTypeOption;
 
 import java.util.Random;
 
@@ -53,10 +54,23 @@ import java.util.Random;
 
 
 
+
+
+
+
+
+
+
 ///test
 import org.kie.api.builder.ReleaseId;
+import org.kie.api.builder.model.KieBaseModel;
+import org.kie.api.builder.model.KieModuleModel;
+import org.kie.api.builder.model.KieSessionModel;
+import org.kie.api.conf.EqualityBehaviorOption;
+import org.kie.api.conf.EventProcessingOption;
 ///end test
 import org.kie.api.io.KieResources;
+import org.kie.api.io.ResourceType;
 import org.kie.internal.io.ResourceFactory;
 
 
@@ -70,7 +84,7 @@ public class SOOHPMain {
 	//these Strings hold the remote paths for the TEST application
 	public static String pathRemoteClueLists = "D:\\SOOHPServer\\ClueLists\\SubmittedClueLists\\";
 	public static String pathRemoteUpdates = "D:\\SOOHPServer\\Updates\\";
-	public static String pathPing = "127.0.0.1";
+	public static String pathPing = "10.50.1.1";
 
 	//these Strings hold the remote paths for the LIVE application
 	//public static String pathScripts =
@@ -131,90 +145,36 @@ public class SOOHPMain {
 		// KieServices is the KIE services factory 
 		KieServices ks = KieServices.Factory.get();
 
-		// //test
-	       	
-		
-		
-//		File file = new File("C:/TEST/SOOHP.drl");
-//		FileInputStream fis = null;
-// 
-//		try {
-//			fis = new FileInputStream(file);
-// 
-//			System.out.println("Total file size to read (in bytes) : "
-//					+ fis.available());
-// 
-//			int content;
-//			while ((content = fis.read()) != -1) {
-//				// convert to char and display it
-//				System.out.print((char) content);
-//			}
-// 
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				if (fis != null)
-//					fis.close();
-//			} catch (IOException ex) {
-//				ex.printStackTrace();
-//			}
-//		}
-		
-		
-//		 ReleaseId releaseId = ks.newReleaseId( "SOOHP", "SOOHP", "0.1" );	
-//		 KieFileSystem kfs = ks.newKieFileSystem();
-//		 //kfs.generateAndWritePomXML(releaseId);
-//		 FileInputStream fis = new FileInputStream("C:/TEST/SOOHP.drl" );
-//		 kfs.write( "src/main/resources/rules/SOOHP.drl",ks.getResources().newInputStreamResource( fis ) );
-//		 KieBuilder kieBuilder = ks.newKieBuilder( kfs ).buildAll();
-//		 KieContainer kieContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId() );
-//		 KieContainer kc = ks.getKieClasspathContainer();
-//		 KieBase kieBase = kc.getKieBase();
-//		 KieSession kieSession = kc.newKieSession();
-		
-		
-//	    byte[] createKJar(KieServices ks1,ReleaseId releaseId,String pom,String drls) {
-//	    	KieFileSystem kfs = ks.newKieFileSystem();
-//if( pom != null ) {
-//kfs.write("pom.xml", pom);
-//} else {
-//kfs.generateAndWritePomXML(releaseId);
-//}
-//KieResources kr = KieServices.getResources();
-//for (int i = 0; i < drls.length; i++) {
-//if (drls[i] != null) {
-//kfs.write( kr.newByteArrayResource( drls[i].getBytes() ).setSourcePath("my/pkg/drl"+i+".drl") );
-//}
-//}
-//KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
-//if( kb.getResults().hasMessages( org.kie.api.builder.Message.Level.ERROR ) ) {
-//for( org.kie.api.builder.Message result : kb.getResults().getMessages() ) {
-//System.out.println(result.getText());
-//}
-//return null;
-//}
-//InternalKieModule kieModule = (InternalKieModule) ks.getRepository()
-//.getKieModule(releaseId);
-//byte[] jar = kieModule.getBytes();
-//return jar;
-//}
-
-
-		
-		
-		// //endTest
-
-		// From the kie services, a container is created from the classpath
-		KieContainer kc = ks.getKieClasspathContainer();
-
 		// read in all the questions from file
 		scanQuestions();
+		
+		// //test
+		KieModuleModel kieModuleModel = ks.newKieModuleModel();
+		KieBaseModel kieBaseModel1 = kieModuleModel.newKieBaseModel( "KBase1 ").setDefault( true ).setEqualsBehavior( EqualityBehaviorOption.EQUALITY ).setEventProcessingMode( EventProcessingOption.STREAM );
 
-		// The callback is responsible for populating working memory and
-		// firing all rules
-		SOOHPUI ui = new SOOHPUI(allQuestions, new SOOHPCallback(kc));
+		KieSessionModel ksessionModel1 = kieBaseModel1.newKieSessionModel( "KSession1" ).setDefault( true ).setType( KieSessionModel.KieSessionType.STATEFUL ).setClockType( ClockTypeOption.get("realtime") );
+		
+		KieFileSystem kfs = ks.newKieFileSystem();   	
+		//kfs.write( "src/main/resources/rules/SOOHP.drl", "C:/TEST/SOOHP.drl" );
+		kfs.write( "src/main/resources/rules/SOOHP.drl",ks.getResources().newFileSystemResource( "C:/TEST/SOOHP.drl" ).setResourceType(ResourceType.DRL) );
+	
+		KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
+		KieContainer kieContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
+		
+//		KieSession ksession = kieContainer.newKieSession();
+//		System.out.println("ksession exists: "+ksession.toString());
+		
+		SOOHPUI ui = new SOOHPUI(allQuestions, new SOOHPCallback(kieContainer));
 		ui.createAndShowGUI(exitOnClose);
+		// //endTest
+
+//		// From the kie services, a container is created from the classpath
+//		KieContainer kc = ks.getKieClasspathContainer();
+//
+//		// The callback is responsible for populating working memory and
+//		// firing all rules
+//		SOOHPUI ui = new SOOHPUI(allQuestions, new SOOHPCallback(kc));
+//		ui.createAndShowGUI(exitOnClose);
 	}
 
 	@SuppressWarnings("serial")
@@ -281,28 +241,6 @@ public class SOOHPMain {
 			frame.setLocationRelativeTo(null); // Center in screen
 			frame.setVisible(true);
 			
-//			 //this is the look and feel code put it in createAndShowGUI
-//			 try
-//			 {
-//			 try {
-//			 UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-//			 } catch (ClassNotFoundException e) {
-//			 // TODO Auto-generated catch block
-//			 e.printStackTrace();
-//			 } catch (InstantiationException e) {
-//			 // TODO Auto-generated catch block
-//			 e.printStackTrace();
-//			 } catch (IllegalAccessException e) {
-//			 // TODO Auto-generated catch block
-//			 e.printStackTrace();
-//			 }
-//			 JFrame.setDefaultLookAndFeelDecorated(true);
-//			 SwingUtilities.updateComponentTreeUI(frame);
-//			 }
-//			 catch (UnsupportedLookAndFeelException e)
-//			 {
-//			 System.out.println(e);
-//			 }
 
 		}
 
@@ -570,9 +508,13 @@ public class SOOHPMain {
 		public void testClues(JFrame frame, Vector<String> currentClueList,
 				String selectedAnswer) {
 			currentClueList.add(selectedAnswer);
+			System.out.println("clue list exists: "+currentClueList);
 
 			// session listed in META-INF/kmodule.xml file
-			KieSession ksession = kcontainer.newKieSession("SOOHPKS");
+			//KieSession ksession = kcontainer.newKieSession("SOOHPKS");
+			KieSession ksession = kcontainer.newKieSession();
+			System.out.println("kcontainer exists: "+kcontainer.toString());
+			System.out.println("ksession exists: "+ksession.toString());
 			ksession.insert(currentClueList);
 			ksession.fireAllRules();
 		}
@@ -581,49 +523,6 @@ public class SOOHPMain {
 	/**
 	 * Methods
 	 */
-	
-	///test
-//    public static KieModule createAndDeployJar( KieServices ks,
-//            ReleaseId releaseId,
-//            String... drls ) {
-//    	byte[] jar = createKJar( ks, releaseId, null, drls );
-//    		return deployJar( ks, jar );
-//}
-    
-//    
-//    public static byte[] createKJar(KieServices ks,
-//    		ReleaseId releaseId,
-//    		String pom,
-//    		String[] drls) {
-//    	KieFileSystem kfs = ks.newKieFileSystem();
-//    	if( pom != null ) {
-//    		kfs.write("pom.xml", pom);
-//    	} else {
-//    		kfs.generateAndWritePomXML(releaseId);
-//    	}
-//    	KieResources kr = KieServices.getResources();
-//    	for (int i = 0; i < drls.length; i++) {
-//    		if (drls[i] != null) {
-//    			kfs.write( kr.newByteArrayResource( drls[i].getBytes()
-//    					).setSourcePath("my/pkg/drl"+i+".drl") );
-//    		}
-//    	}
-//    	KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
-//    	if( kb.getResults().hasMessages(
-//    			org.kie.api.builder.Message.Level.ERROR ) ) {
-//    		for( org.kie.api.builder.Message result :
-//    			kb.getResults().getMessages() ) {
-//    			System.out.println(result.getText());
-//    		}
-//    		return null;
-//    	}
-//    	InternalKieModule kieModule = (InternalKieModule) ks.getRepository()
-//    			.getKieModule(releaseId);
-//    	byte[] jar = kieModule.getBytes();
-//    	return jar;
-//    }
-    ////endtest
-
 	
 	
 	//this method scans in all the questions from a file to the allQuestions array

@@ -41,3 +41,5 @@ then
 	SOOHPMain.SOOHPUI.showTestScreen("Test.Prnt.otherPWRCable");
 	
 end
+
+
