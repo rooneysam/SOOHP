@@ -101,6 +101,7 @@ public class SOOHPMain {
 	public static String SelectedAnswer;
 	public static String SelectedType;
 	public static String Succeded;
+	public static Boolean isFix = false;
 	public static JFrame frame = new JFrame("SOOHP");
 	public static JTextArea questionTextArea;
 	public static Question SelectedQuestion;
@@ -156,7 +157,7 @@ public class SOOHPMain {
 		
 		KieFileSystem kfs = ks.newKieFileSystem();   	
 		//kfs.write( "src/main/resources/rules/SOOHP.drl", "C:/TEST/SOOHP.drl" );
-		kfs.write( "src/main/resources/rules/SOOHP.drl",ks.getResources().newFileSystemResource( "C:/TEST/SOOHP.drl" ).setResourceType(ResourceType.DRL) );
+		kfs.write( "src/main/resources/rules/SOOHP.drl",ks.getResources().newFileSystemResource( pathApplication + "SOOHP.drl" ).setResourceType(ResourceType.DRL) );
 	
 		KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
 		KieContainer kieContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
@@ -328,6 +329,11 @@ public class SOOHPMain {
 					questionTextArea.setText(testQuestions.get(g)
 							.getQuestionText());
 				}
+				
+				if (testQuestions.get(g).getQuestionName().contains("isFix")) {
+					isFix = true;
+				}
+				
 				testNoButton.setActionCommand("testNo");
 				testYesButton.setActionCommand("testYes");
 				answerPane.removeAll();
@@ -343,14 +349,25 @@ public class SOOHPMain {
 
 		//this calls the success screen 
 		public static void showSuccessScreen() {
-			Succeded = "fixed";
+
 			testYesButton.setVisible(false);
 			buttonPanel.remove(testYesButton);
 			testNoButton.setVisible(false);
 			buttonPanel.remove(testNoButton);
 			buttonPanel.add(finishedButton);
-			questionTextArea
-					.setText("Success! SOOHP is glad it could fix your problem details of the fix will be uploaded to make future diagnoses more efficient.");
+			
+			if(isFix==true){
+				Succeded = "fixed";
+				questionTextArea
+				.setText("Success! SOOHP is glad it could fix your problem, details of the fix will be uploaded to make future diagnoses more efficient.");
+			}
+			
+			if(isFix==false){
+				Succeded = "diagnosed";
+				questionTextArea
+				.setText("SOOHP has diagnosed your problem, details of the diagnosis will be uploaded to support staff fix the problem");
+			}
+			
 			frame.setVisible(true);
 		}
 
@@ -462,6 +479,9 @@ public class SOOHPMain {
 	//clicking this button indicates a test was unsuccessful and so the next question must be called
 	public static class testNoButtonHandler extends MouseAdapter {
 		public void mouseReleased(MouseEvent e) {
+			//set the boolean that indicates the test is a fix rather than a diagnoses back to false
+			isFix = false;
+			
 			//change the word test for the word tried this stops the rules from firing more than once or the test screen from being called repeatedly
 			for (int v = 0; v < clueList.size(); v++) {
 				clueList.set(v, clueList.get(v).replace("Test", "Tried"));
