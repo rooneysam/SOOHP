@@ -52,23 +52,12 @@ import java.util.Random;
 
 
 
-
-
-
-
-
-
-
-
-
-///test
 import org.kie.api.builder.ReleaseId;
 import org.kie.api.builder.model.KieBaseModel;
 import org.kie.api.builder.model.KieModuleModel;
 import org.kie.api.builder.model.KieSessionModel;
 import org.kie.api.conf.EqualityBehaviorOption;
 import org.kie.api.conf.EventProcessingOption;
-///end test
 import org.kie.api.io.KieResources;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.io.ResourceFactory;
@@ -84,7 +73,7 @@ public class SOOHPMain {
 	//these Strings hold the remote paths for the TEST application
 	public static String pathRemoteClueLists = "D:\\SOOHPServer\\ClueLists\\SubmittedClueLists\\";
 	public static String pathRemoteUpdates = "D:\\SOOHPServer\\Updates\\";
-	public static String pathPing = "10.50.1.1";
+	public static String pathPing = "127.0.0.1";
 
 	//these Strings hold the remote paths for the LIVE application
 	//public static String pathScripts =
@@ -149,33 +138,21 @@ public class SOOHPMain {
 		// read in all the questions from file
 		scanQuestions();
 		
-		// //test
 		KieModuleModel kieModuleModel = ks.newKieModuleModel();
 		KieBaseModel kieBaseModel1 = kieModuleModel.newKieBaseModel( "KBase1 ").setDefault( true ).setEqualsBehavior( EqualityBehaviorOption.EQUALITY ).setEventProcessingMode( EventProcessingOption.STREAM );
 
 		KieSessionModel ksessionModel1 = kieBaseModel1.newKieSessionModel( "KSession1" ).setDefault( true ).setType( KieSessionModel.KieSessionType.STATEFUL ).setClockType( ClockTypeOption.get("realtime") );
 		
 		KieFileSystem kfs = ks.newKieFileSystem();   	
-		//kfs.write( "src/main/resources/rules/SOOHP.drl", "C:/TEST/SOOHP.drl" );
+
 		kfs.write( "src/main/resources/rules/SOOHP.drl",ks.getResources().newFileSystemResource( pathApplication + "SOOHP.drl" ).setResourceType(ResourceType.DRL) );
 	
 		KieBuilder kb = ks.newKieBuilder(kfs).buildAll();
 		KieContainer kieContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
 		
-//		KieSession ksession = kieContainer.newKieSession();
-//		System.out.println("ksession exists: "+ksession.toString());
-		
 		SOOHPUI ui = new SOOHPUI(allQuestions, new SOOHPCallback(kieContainer));
 		ui.createAndShowGUI(exitOnClose);
-		// //endTest
 
-//		// From the kie services, a container is created from the classpath
-//		KieContainer kc = ks.getKieClasspathContainer();
-//
-//		// The callback is responsible for populating working memory and
-//		// firing all rules
-//		SOOHPUI ui = new SOOHPUI(allQuestions, new SOOHPCallback(kc));
-//		ui.createAndShowGUI(exitOnClose);
 	}
 
 	@SuppressWarnings("serial")
@@ -184,7 +161,7 @@ public class SOOHPMain {
 		public SOOHPUI(Vector<Question> allQs, SOOHPCallback newCallback) {
 			super(new BorderLayout());
 			callback = newCallback;
-			//add button listners
+			//add button listeners
 			testYesButton.addMouseListener(myTestYesButtonHandler);
 			testNoButton.addMouseListener(myTestNoButtonHandler);
 			exitButton.addMouseListener(myExitButtonHandler);
@@ -594,13 +571,13 @@ public class SOOHPMain {
 	}
 
 	//this method checks for updates to the program and uploads any saved cluelist files to the server
+	@SuppressWarnings("resource")
 	public static void updateChecker() throws IOException {
 		File updateFolder = new File(pathUpdates);
-		File currentJarFile = new File(updateFolder + "\\SOOHP.jar");
+		File currentDRLFile = new File(updateFolder + "\\SOOHP.drl");
 		//if an update is ready in the local update folder apply it
-		if (FileUtils.directoryContains(updateFolder, currentJarFile)) {
-			String runString = ("cmd /c start copyFiles.bat");
-			Runtime.getRuntime().exec(runString);
+		if (FileUtils.directoryContains(updateFolder, currentDRLFile)) {
+			Runtime.getRuntime().exec("cmd /c \"c:\\program files\\SOOHP\\Application\\copyFiles.bat\"");
 			System.exit(0);
 		}
 
@@ -645,7 +622,7 @@ public class SOOHPMain {
 
 			File currentQuestionFile = new File(updateFolder
 					+ "\\allQuestions.csv");
-			File newJarFile = new File(remoteUpdateFolder + "\\SOOHP.jar");
+			File newDRLFile = new File(remoteUpdateFolder + "\\SOOHP.drl");
 			File newQuestionFile = new File(remoteUpdateFolder
 					+ "\\allQuestions.csv");
 			Scanner currentVersionScanner = new Scanner(new File(
@@ -654,10 +631,10 @@ public class SOOHPMain {
 					+ "\\version.txt")).useDelimiter("\n");
 			int currentVersionNumber = currentVersionScanner.nextInt();
 			System.out.println("current version: " + currentVersionNumber);
-			int newVersionNumber = newVersionScanner.nextInt();
+			int newVersionNumber = newVersionScanner.nextInt();		
 			System.out.println("new version: " + newVersionNumber);
 			if (newVersionNumber > currentVersionNumber) {
-				FileUtils.copyFile(newJarFile, currentJarFile);
+				FileUtils.copyFile(newDRLFile, currentDRLFile);
 				FileUtils.copyFile(newQuestionFile, currentQuestionFile);
 				FileUtils.copyFile(newVersionFile, currentVersionFile);
 				currentVersionScanner.close();
@@ -666,6 +643,7 @@ public class SOOHPMain {
 			} else {
 				System.out.println("no update needed");
 			}
+			currentVersionScanner.close();
 		}
 	}
 
